@@ -4,9 +4,13 @@
 // wyświetlania, ani tworzenia interfejsu
 class Piece {
     // przykładowy konstruktor
-    constructor(x,y) {
-        this._x = x;
-        this._y = y;
+    constructor(name, currentPosition, colorChess) {
+        //np. rook, queen, bishop
+        this._name = name;
+        //np. [2,5],[x=1,y=3],[x:3,y:1]...
+        this._currentPosition = currentPosition;
+        //black or white
+        this._colorChess = colorChess;
     }
 }
 
