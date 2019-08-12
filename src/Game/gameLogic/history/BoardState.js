@@ -3,7 +3,11 @@ import Piece from "../pieces/Piece";
 class BoardState {
     constructor(board) {
         this._boardState = BoardState.flatten(board);
+        // Hej, ja dałbym tutaj freeze na this._boardState
+        // bo freeze nie jest głęboki, a to właśnie this._boardState chcemy
+        // zamrozić
         Object.freeze(this);
+
     }
 
     get boardState() {
@@ -59,11 +63,15 @@ class BoardState {
     }
 
     toTwoDimensionArray() {
-        let array2d = new Array(8);
+        // let array2d = new Array(8);
+        // pozwoliłem sobie zmienić na taką prostą metodę - tablice stworzone przez new Array()
+        // z jednym argumentem liczbowym czasem zachowują się dziwnie - lepiej wypełnić undefined
+        const array2d = this._emptyArrayHelper(8)
 
         // Inicjalizacja dwuwymiarowej tablicy
         for (let i = 0; i < array2d.length; ++i) {
-            array2d[i] = new Array(8);
+            // array2d[i] = new Array(8);
+            array2d[i] = this._emptyArrayHelper(8);
         }
 
         for (let piece of this._boardState) {
@@ -72,6 +80,16 @@ class BoardState {
 
         return array2d;
     }
+
+    _emptyArrayHelper(size) {
+        const emptyArray = [];
+        for(let i = 0 ; i < size ; i++){
+            emptyArray.push(undefined);
+        }
+        return emptyArray;
+    }
 }
+
+
 
 export default BoardState;
