@@ -1,12 +1,9 @@
-import Piece from "../pieces/Piece";
+import {Knight, Bishop, Pawn, King, Queen, Rook} from "../pieces/"
 
 class BoardState {
     constructor(board) {
         this._boardState = BoardState.flatten(board);
-        // Hej, ja dałbym tutaj freeze na this._boardState
-        // bo freeze nie jest głęboki, a to właśnie this._boardState chcemy
-        // zamrozić
-        Object.freeze(this);
+        Object.freeze(this._boardState);
 
     }
 
@@ -20,9 +17,9 @@ class BoardState {
         ich parametry w spłaszczonej strukturze:
         {
             name: "bishop",
-            currentPosition: [1, 5],
-            colorChess: "black",
-            movePoint: 2,
+            position: [1, 5],
+            color: "black",
+            movementPoints: 2,
             moveDirection: "diagonally"
         }
     */
@@ -32,9 +29,9 @@ class BoardState {
         for (let piece of board) {
             boardState.push({
                 name: piece.name,
-                currentPosition: piece.currentPosition,
-                colorChess: piece.colorChess,
-                movePoint: piece.movePoint,
+                position: piece.position,
+                color: piece.color,
+                movementPoints: piece.movementPoints,
                 moveDirection: piece.moveDirection
             });
         }
@@ -44,38 +41,32 @@ class BoardState {
 
     /*
         Mapuje dwumiarową, spłaszczoną tablicę obiektów 
-        na właściwy obiekt typu Piece.
+        na właściwy obiekt typu dziedziczącego po Piece.
     */
     static deflatten(boardState) {
         let board = new Array();
 
-        for (let piece of boardState) {
-            board.push(new Piece(
-                piece.name, 
-                piece.currentPosition, 
-                piece.colorChess,
-                piece.movePoint,
-                piece.moveDirection
-            ));
+        for (let flatPiece of boardState) {
+            board.push(this._createProperPiece(flatPiece)); 
         }
 
         return board;
     }
 
+    /*
+        Mapuje właściwość _boardState do dwuwymiarowej tablicy
+        reprezentującej ułożenie pionków na planszy.
+    */
     toTwoDimensionArray() {
-        // let array2d = new Array(8);
-        // pozwoliłem sobie zmienić na taką prostą metodę - tablice stworzone przez new Array()
-        // z jednym argumentem liczbowym czasem zachowują się dziwnie - lepiej wypełnić undefined
         const array2d = this._emptyArrayHelper(8)
 
         // Inicjalizacja dwuwymiarowej tablicy
         for (let i = 0; i < array2d.length; ++i) {
-            // array2d[i] = new Array(8);
             array2d[i] = this._emptyArrayHelper(8);
         }
 
-        for (let piece of this._boardState) {
-            array2d[piece.currentPosition[0]][piece.currentPosition[1]] = piece;
+        for (let flatPiece of this._boardState) {
+            array2d[flatPiece.position[0]][flatPiece.position[1]] = this._createProperPiece(flatPiece);
         }
 
         return array2d;
@@ -83,13 +74,49 @@ class BoardState {
 
     _emptyArrayHelper(size) {
         const emptyArray = [];
-        for(let i = 0 ; i < size ; i++){
+
+        for (let i = 0; i < size ; i++){
             emptyArray.push(undefined);
         }
+
         return emptyArray;
     }
+
+    /*
+        Wywołuje konstruktor poprawnego typu pionka
+        na podstawie jego nazwy.
+    */
+    _createProperPiece(flatPiece) {
+        // let name = flatPiece.name;
+        // let position = flatPiece.position;
+        // let color = flatPiece.color;
+        // let movementPoints = flatPiece.movementPoints;
+        // let moveDirection = flatPiece.moveDirection;
+        
+        // switch(name) {
+        //     case "Pawn":
+        //         return new Pawn(position, color, movementPoints, moveDirection);
+        //     case "Knight":
+        //         return new Knight(position, color, movementPoints, moveDirection);
+        //     case "Bishop":
+        //         return new Bishop(position, color, movementPoints, moveDirection);
+        //     case "Rook":
+        //         return new Rook(position, color, movementPoints, moveDirection);
+        //     case "Queen":
+        //         return new Queen(position, color, movementPoints, moveDirection);
+        //     case "King":
+        //         return new King(position, color, movementPoints, moveDirection);
+        //     default:
+        //         throw "Improper piece name";
+        // }
+
+        return window[name](
+            flatPiece.position, 
+            flatPiece.color, 
+            flatPiece.movementPoints, 
+            flatPiece.moveDirection
+        );
+    }
 }
-
-
 
 export default BoardState;
