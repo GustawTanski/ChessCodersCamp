@@ -25,9 +25,7 @@ class BoardState {
     static flattenBoard(board) {
         var boardState = new Array();
 
-        for (var field in board) {
-            let piece = board[field];
-
+        for (var piece of board) {
             boardState.push({
                 name: piece.name,
                 currentPosition: piece.currentPosition,
@@ -47,9 +45,7 @@ class BoardState {
     static deflattenBoard(boardState) {
         var board = new Array();
 
-        for (var field in boardState) {
-            let piece = boardState[field];
-
+        for (var piece of boardState) {
             board.push(new Piece(
                 piece.name, 
                 piece.currentPosition, 
