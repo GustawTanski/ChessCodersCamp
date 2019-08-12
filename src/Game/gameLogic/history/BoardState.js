@@ -2,7 +2,7 @@ import Piece from "../pieces/Piece";
 
 class BoardState {
     constructor(board) {
-        this._boardState = flattenBoard(board);
+        this._boardState = BoardState.flattenBoard(board);
         Object.freeze(this);
     }
 
@@ -16,27 +16,25 @@ class BoardState {
         ich parametry w spłaszczonej strukturze:
         {
             name: "bishop",
+            currentPosition: [1, 5],
             colorChess: "black",
-            movePoint: ,
+            movePoint: 2,
             moveDirection: "diagonally"
         }
     */
     static flattenBoard(board) {
-        var boardState = [[]];
+        var boardState = new Array();
 
-        for (var x = 0; x < board.length; ++x) {
-            for (var y = 0; y < board.length; ++y) {
-                let currentField = board[x][y];
+        for (var field in board) {
+            let piece = board[field];
 
-                if (currentField !== undefined) {
-                    boardState[x][y] = {
-                        name: currentField.name,
-                        colorChess: currentField.colorChess,
-                        movePoint: currentField.movePoint,
-                        moveDirection: currentField.moveDirection
-                    }
-                }
-            }
+            boardState.push({
+                name: piece.name,
+                currentPosition: piece.currentPosition,
+                colorChess: piece.colorChess,
+                movePoint: piece.movePoint,
+                moveDirection: piece.moveDirection
+            });
         }
 
         return boardState;
@@ -47,21 +45,21 @@ class BoardState {
         na właściwy obiekt typu Piece.
     */
     static deflattenBoard(boardState) {
-        for (var x = 0; x < boardState.length; ++x) {
-            for (var y = 0; y < boardState.length; ++y) {
-                let currentField = boardState[x][y];
+        var board = new Array();
 
-                if (currentField !== undefined) {
-                    board[x][y] = new Piece(
-                        currentField.name, 
-                        [x, y], 
-                        currentField.colorChess,
-                        currentField.movePoint,
-                        currentField.moveDirection
-                    )
-                }
-            }
+        for (var field in boardState) {
+            let piece = boardState[field];
+
+            board.push(new Piece(
+                piece.name, 
+                piece.currentPosition, 
+                piece.colorChess,
+                piece.movePoint,
+                piece.moveDirection
+            ));
         }
+
+        return board;
     }
 }
 
