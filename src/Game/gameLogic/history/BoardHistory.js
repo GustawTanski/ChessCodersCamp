@@ -1,21 +1,8 @@
 import BoardState from "./BoardState";
 
-class BoardHistory {
-    constructor() {
-        this._history = [];
-    }
-
-    get history() {
-        return this._history;
-    }
-
-    addToHistory(currentState) {
-        this._history.push(new BoardState(currentState));
-    }
-
-    undoOneMove() {
-        return this._history.pop();
-    }
+class BoardHistory extends Array {
+    /*  brak metod, dodane będą w przyszłości gdyby okazało
+        się że potrzebne jest coś poza metodami dostępnymi w Array */
 }
 
 export default BoardHistory;
