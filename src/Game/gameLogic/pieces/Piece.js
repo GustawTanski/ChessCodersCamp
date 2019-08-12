@@ -3,24 +3,34 @@
 // Wszystkie klasy z folderu Pieces to klasy logiczne - służą do obliczeń i wewnętrzenej mechaniki gry, nie do 
 // wyświetlania, ani tworzenia interfejsu
 class Piece {
-    constructor(name, currentPosition, colorChess, movePoint, moveDirection) {
-        //np. rook, queen, bishop
-        this._name = name;
+    constructor(position, color, movementPoints, moveDirection) {
+        //zamiast podawanej właściwości name, bedzie ona pobierana z właściwości konstruktora .name
+        // np. const pionek = new Piece(x,y,z...) pionek.constructor.name
+
         //np. [2,5],[x=1,y=3],[x:3,y:1]...
-        this.currentPosition = currentPosition;
+        this._position = position;
         // np. black or white
-        this._colorChess = colorChess
+        this._color = color;
+        // kierunki w których może poruszać się pionek np. forwardOnly,diagonally,leftAndRight
+        this._moveDirection = moveDirection;
+        //o ile pól pionek może się poruszyć np. pawn ma 2, knight ma 1, rook ma 7
+        this._movementPoints = movementPoints;
+        // możliwe promocje
+        this.possiblePromotion = ["queen", "rook", "bishop", "knight"];
 
-        this._movePoint = movePoint;
-
-        //informuje o tym by zaznaczyc pola ruchu pionka
-        this.colorField = false;
-        // informuje o tym by zaznaczyć/wyróżnić aktualnie kliknięty pionek
-        this.activeChess = false;
-
-
-        // // np. forwardOnly,diagonally,leftAndRight
-        // this._moveDirection = moveDirection;
+        this.promoted = false;
+    }
+    get _position() {
+        return this._position;
+    }
+    get color() {
+        return this.color;
+    }
+    get _moveDirection() {
+        return this._moveDirection;
+    }
+    get _movementPoints() {
+        return this._movementPoints;
     }
 
     moveChess() {
@@ -31,9 +41,8 @@ class Piece {
         // metoda sprawdzająca czy dany ruch jest możliwy
     }
 
-    onClickShowActiveChess() {
-        this.activeChess=!this.activeChess;
-        return this.activeChess;
+    pieceLoss() {
+        // metoda wywoływana w momencie gdy nasz pionek został zbity
     }
 
 }
