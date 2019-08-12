@@ -2,7 +2,7 @@ import Piece from "../pieces/Piece";
 
 class BoardState {
     constructor(board) {
-        this._boardState = BoardState.flattenBoard(board);
+        this._boardState = BoardState.flatten(board);
         Object.freeze(this);
     }
 
@@ -22,7 +22,7 @@ class BoardState {
             moveDirection: "diagonally"
         }
     */
-    static flattenBoard(board) {
+    static flatten(board) {
         let boardState = new Array();
 
         for (let piece of board) {
@@ -42,7 +42,7 @@ class BoardState {
         Mapuje dwumiarową, spłaszczoną tablicę obiektów 
         na właściwy obiekt typu Piece.
     */
-    static deflattenBoard(boardState) {
+    static deflatten(boardState) {
         let board = new Array();
 
         for (let piece of boardState) {
@@ -56,6 +56,21 @@ class BoardState {
         }
 
         return board;
+    }
+
+    toTwoDimensionArray() {
+        let array2d = new Array(8);
+
+        // Inicjalizacja dwuwymiarowej tablicy
+        for (let i = 0; i < array2d.length; ++i) {
+            array2d[i] = new Array(8);
+        }
+
+        for (let piece of this._boardState) {
+            array2d[piece.currentPosition[0]][piece.currentPosition[1]] = piece;
+        }
+
+        return array2d;
     }
 }
 
