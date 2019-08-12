@@ -32,7 +32,7 @@ class Piece {
     }
 
     onClickShowActiveChess() {
-        !this.activeChess;
+        this.activeChess=!this.activeChess;
         return this.activeChess;
     }
 
