@@ -44,7 +44,8 @@ Kilka zasad projektu:
 12. Komentarze piszemy po polsku. Polecam pisać jak najwięcej zgodnie z zasadą:
     Komentarz odpowiada na pytanie ,,Co to jest?'', a nie na pytanie ,,Dlaczego
     to tu jest?''.
-13. Dodatkowe zasady wkrótce lub nigdy.
+13. Polom szachownicy odpowiadają obiekt o postaci { x: number, y: number} (np. { x: 1, y: 1}). X liczymy od lewej do prawej od 0 do 7, a y od dołu do góry również od 0 do 7.
+14. Dodatkowe zasady wkrótce lub nigdy.
 
 W razie jakichkolwiek wątpliwości na temat tych zasad, proszę pisać do mnie.
 Oczywiście zasady są po to, żeby je zmieniać, więc wszelkie sugestie na temat
