@@ -14,13 +14,8 @@ class Piece {
         // możliwe promocje
         // zmieniłem na wielkie litery - bo nazwy klas GUSTAW
         this.possiblePromotion = ["Queen", "Rook", "Bishop", "Knight"];
-
-        this.promoted = false;
-
         // dodałem, bo w sumie to może gdzieś się przyda GUSTAW
         this._name = this.constructor.name;
-
-        this._movementPoints = null;
     }
     get position() {
         return this._position;
@@ -42,7 +37,19 @@ class Piece {
 
     pieceLoss() {
         // metoda wywoływana w momencie gdy nasz pionek został zbity
-        // this._position={x:null,y:null}
+        // this._position={x:null,y:null} ?
+        return { x: null, y: null };
+    }
+
+    _isOutOfTheBoard(toCoords) {
+        //metoda sprawdzająca czy wybrane pole nie jest poza planszą
+        //jezeli zwraca TRUE - jest poza plansza
+        //jezeli zwraca false - jest dalej na planszy
+        const { x: posX, y: posY } = coords;
+        if (posX < 0 || posX > 7 || posY < 0 || posY > 7) {
+            return true;
+        }
+        return false;
     }
 }
 
