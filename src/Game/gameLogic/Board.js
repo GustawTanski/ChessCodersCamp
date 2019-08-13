@@ -18,7 +18,7 @@ class Board {
     }
 
     findPiece(coords) {
-        return this.pieces.find(piece => piece.position === coords);
+        return this.pieces.find(piece => piece.position.x === coords.x && piece.position.y === coords.y);
     }
 
 
@@ -41,42 +41,42 @@ class Board {
     createPawns(color) {
         const xArray = [0, 1, 2, 3, 4, 5, 6, 7];
         const y = color === 'white' ? 1 : 6;
-        const type = 'pawn';
+        const type = 'Pawn';
         this.createPiecesOfGivenType(xArray, y, color, type);
     }
 
     createRooks(color) {
         const xArray = [0, 7];
         const y = this.whichRow(color);
-        const type = 'rook';
+        const type = 'Rook';
         this.createPiecesOfGivenType(xArray, y, color, type);
     }
 
     createKnights(color) {
         const xArray = [1, 6];
         const y = this.whichRow(color);
-        const type = 'knight';
+        const type = 'Knight';
         this.createPiecesOfGivenType(xArray, y, color, type);
     }
 
     createBishops(color) {
         const xArray = [2, 5];
         const y = this.whichRow(color);
-        const type = 'bishop';
+        const type = 'Bishop';
         this.createPiecesOfGivenType(xArray, y, color, type);
     }
 
     createQueen(color) {
         const xArray = [3];
         const y = this.whichRow(color);
-        const type = 'queen';
+        const type = 'Queen';
         this.createPiecesOfGivenType(xArray, y, color, type);
     }
 
     createKing(color) {
         const xArray = [4];
         const y = this.whichRow(color);
-        const type = 'king';
+        const type = 'King';
         this.createPiecesOfGivenType(xArray, y, color, type);
     }
 
@@ -96,17 +96,17 @@ class Board {
             y: y
         };
         switch (type) {
-            case 'pawn':
+            case 'Pawn':
                 return new Pawn(coords, color);
-            case 'rook':
+            case 'Rook':
                 return new Rook(coords, color);
-            case 'knight':
+            case 'Knight':
                 return new Knight(coords, color);
-            case 'bishop':
+            case 'Bishop':
                 return new Bishop(coords, color);
-            case 'queen':
+            case 'Queen':
                 return new Queen(coords, color);
-            case 'king':
+            case 'King':
                 return new King(coords, color);
         }
     }
