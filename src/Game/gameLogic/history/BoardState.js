@@ -1,10 +1,14 @@
-import {Knight, Bishop, Pawn, King, Queen, Rook} from "../pieces/"
+import Knight from "../pieces/Knight";
+import Bishop from "../pieces/Bishop";
+import Pawn from "../pieces/Pawn";
+import King from "../pieces/King";
+import Queen from "../pieces/Queen";
+import Rook from "../pieces/Rook";
 
 class BoardState {
     constructor(board) {
         this._boardState = BoardState.flatten(board);
         Object.freeze(this._boardState);
-
     }
 
     get boardState() {
@@ -18,9 +22,7 @@ class BoardState {
         {
             name: "bishop",
             position: [1, 5],
-            color: "black",
-            movementPoints: 2,
-            moveDirection: "diagonally"
+            color: "black"
         }
     */
     static flatten(board) {
@@ -30,9 +32,7 @@ class BoardState {
             boardState.push({
                 name: piece.name,
                 position: piece.position,
-                color: piece.color,
-                movementPoints: piece.movementPoints,
-                moveDirection: piece.moveDirection
+                color: piece.color
             });
         }
 
@@ -72,6 +72,10 @@ class BoardState {
         return array2d;
     }
 
+    /* 
+        Inicjalizuje tablicę o określonym rozmiarze
+        i wypełnia ją undefined
+    */
     _emptyArrayHelper(size) {
         const emptyArray = [];
 
@@ -87,35 +91,12 @@ class BoardState {
         na podstawie jego nazwy.
     */
     _createProperPiece(flatPiece) {
-        // let name = flatPiece.name;
-        // let position = flatPiece.position;
-        // let color = flatPiece.color;
-        // let movementPoints = flatPiece.movementPoints;
-        // let moveDirection = flatPiece.moveDirection;
-        
-        // switch(name) {
-        //     case "Pawn":
-        //         return new Pawn(position, color, movementPoints, moveDirection);
-        //     case "Knight":
-        //         return new Knight(position, color, movementPoints, moveDirection);
-        //     case "Bishop":
-        //         return new Bishop(position, color, movementPoints, moveDirection);
-        //     case "Rook":
-        //         return new Rook(position, color, movementPoints, moveDirection);
-        //     case "Queen":
-        //         return new Queen(position, color, movementPoints, moveDirection);
-        //     case "King":
-        //         return new King(position, color, movementPoints, moveDirection);
-        //     default:
-        //         throw "Improper piece name";
-        // }
+        const pieceTypes = [Knight, Bishop, Pawn, King, Queen, Rook];
+        const CurrentPiece = pieceTypes.find(type => type.name == flatPiece.name);
 
-        return window[name](
-            flatPiece.position, 
-            flatPiece.color, 
-            flatPiece.movementPoints, 
-            flatPiece.moveDirection
-        );
+        if (!CurrentPiece) throw Error("Improper piece name");
+        
+        return new CurrentPiece(flatPiece.position, flatPiece.color);
     }
 }
 
