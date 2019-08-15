@@ -16,6 +16,8 @@ class Piece {
         this.possiblePromotion = ["Queen", "Rook", "Bishop", "Knight"];
         // dodałem, bo w sumie to może gdzieś się przyda GUSTAW
         this._name = this.constructor.name;
+
+        this.isBeaten = false;
     }
     get position() {
         return this._position;
@@ -29,6 +31,8 @@ class Piece {
 
     move(toCoords) {
         //metoda odpowiedzialna za poruszanie się pionka
+        const { x, y } = toCoords;
+        this._position = { x, y }
     }
 
     legalMoves(boardState) {
@@ -37,16 +41,15 @@ class Piece {
 
     pieceLoss() {
         // metoda wywoływana w momencie gdy nasz pionek został zbity
-        // this._position={x:null,y:null} ?
-        return { x: null, y: null };
+        this.isBeaten = true;
+        this._position = { x: null, y: null }
     }
-
     _isOutOfTheBoard(toCoords) {
         //metoda sprawdzająca czy wybrane pole nie jest poza planszą
         //jezeli zwraca TRUE - jest poza plansza
         //jezeli zwraca false - jest dalej na planszy
-        const { x: posX, y: posY } = coords;
-        if (posX < 0 || posX > 7 || posY < 0 || posY > 7) {
+        const { x, y } = toCoords;
+        if (x < 0 || x > 7 || y < 0 || y > 7) {
             return true;
         }
         return false;
