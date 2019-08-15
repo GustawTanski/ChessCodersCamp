@@ -13,12 +13,23 @@ class Bishop extends Piece {
 
     legalMoves(boardState) {
         // metoda sprawdzająca możliwe ruchy
+
+
+
+        const possiblePositions = this._allPossiblePositions;
+
+        //eliminacja pozycji poza szachownicą
+
+
+
+
+        const boardState2D = boardState.toTwoDimensionArray;
+        //eliminacja pozycji gdzie stoją figury tego samego typu
+        const legalPositions
+
+        return legalPositions;
     }
 
-    pieceLoss() {
-        // metoda wywoływana w momencie gdy nasz pionek został zbity
-        // this._position={x:null,y:null}
-    }
 
 
     _allPossiblePositions() {
