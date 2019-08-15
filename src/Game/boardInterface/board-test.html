@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<meta charset="UTF-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+		<meta http-equiv="X-UA-Compatible" content="ie=edge" />
+		<title>Chess - simple vanilla JS and HTML5 game</title>
+        <link rel="stylesheet" type="text/css" href="board.css">
+	</head>
+	<body>
+		<div id="board-container"></div>
+    </body>
+    <script src="boardInterface.js"></script>
+    <script>
+
+let board = new InterfaceBoard(document.getElementById("board-container"));
+board.highlightFields([{x:2,y:2},{x:0,y:7}]);
+setTimeout(function(){
+    for(let i=0;i<8;i++){
+        let firstRow = ["rook","knight","bishop","queen","king","bishop","knight","rook"];
+        board.placePiece({x:i,y:1},"pawn","white");
+        board.placePiece({x:i,y:6},"pawn","white");
+        board.placePiece({x:i,y:6},"pawn","black");
+        board.placePiece({x:i,y:0},firstRow[i],"white");
+        board.placePiece({x:i,y:7},firstRow[i],"black");
+    }
+},500);
+setTimeout(function(){
+    board.highlightFields([{x:5,y:5},{x:6,y:6}]);
+    board.clearPieces({x:6,y:6});
+},2000);
+setTimeout(function(){
+    for(let i=0;i<8;i++){
+        board.clearPieces();
+    }
+},3000);
+setTimeout(function(){
+    board.clearHighlights();
+    for(let i=0;i<8;i++){
+        let firstRow = ["rook","knight","bishop","queen","king","bishop","knight","rook"];
+        board.placePiece({x:i,y:1},"pawn","white");
+        board.placePiece({x:i,y:6},"pawn","black");
+        board.placePiece({x:i,y:0},firstRow[i],"white");
+        board.placePiece({x:i,y:7},firstRow[i],"black");
+    }
+},4000);
+setTimeout(function(){
+    board.move({x:4,y:1},{x:4,y:3});
+    setTimeout(function(){
+        board.move({x:4,y:6},{x:4,y:4});
+        setTimeout(function(){
+            board.move({x:3,y:1},{x:3,y:3});
+        },1000);
+    },1000);
+},4500);
+
+
+    </script>
+</html>
