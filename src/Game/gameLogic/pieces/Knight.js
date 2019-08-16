@@ -15,19 +15,19 @@ class Knight extends Piece {
     //oraz pozycje na których stoją figury tego samego koloru co dany skoczek
     legalMoves(boardState) {
 
-        const possiblePositions = this._allPossiblePositions;
+        const possiblePositions = this._allPossiblePositions();
 
         //eliminacja pozycji poza szachownicą
         const onBoardPositions = possiblePositions.filter(pos => {
-            return !Piece._isOutOfTheBoard(pos);
+            return !this._isOutOfTheBoard(pos);
         });
 
         //eliminacja pozycji na których już stoi figura tego samego koloru co skoczek - nie zbijamy samych siebie
-        const boardState2D = boardState.toTwoDimensionArray;
+        const boardState2D = boardState.toTwoDimensionArray();
         const legalPositions = onBoardPositions.filter(pos => {
-            //pieceOnBoard figura na szachownicy na pozycji którą może zająć skoczek
-            const pieceOnBoard = boardState2D[pos.x][pos.y];
-            return pieceOnBoard.color != this._color;
+            if (boardState2D[pos.x][pos.y] == undefined || boardState2D[pos.x][pos.y].color != this._color) {
+                return true;
+            }
         });
 
         //zwraca legalne pozycje - tablicę elementów Coords
