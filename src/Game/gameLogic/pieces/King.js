@@ -16,25 +16,21 @@ class King extends Piece {
 
     legalMoves(boardState) {
         const possiblePositions = this._allPossiblePositions();
-        const boardState = boardState;
         const boardState2D = boardState.toTwoDimensionArray();
         const onBoardPositions = possiblePositions.filter(pos => {
             return !this._isOutOfTheBoard(pos);
         });
-        const yourPiecePositions = onBoardPositions.filter(pos => {
+        const yourPossiblePiecePositions = onBoardPositions.filter(pos => {
             const pieceOnBoard = boardState2D[pos.x][pos.y];
             return pieceOnBoard.color != this._color;
         });
         // wyszukuje wszystkie mozliwe ruchy pionków przeciwnika
         const opponentPieceMoves = this.checkOpponentMoves(boardState, boardState2D);
-
-        // zwraca tablice mozliwych ruchow
-        const legalPositions = this.checkLegalPosition(yourPiecePositions, opponentPieceMoves);
-
+        // zwraca tablice mozliwych ruchow uwzgledniajac mozliwe ruchy przeciwnika
+        const legalPositions = this.checkLegalPosition(yourPossiblePiecePositions, opponentPieceMoves);
         //zwraca legalne pozycje - tablicę elementów Coords
         return legalPositions;
     }
-
 
     checkOpponentMoves(boardState, boardState2D) {
         const arrayOfOpponentPositions = [];
@@ -48,10 +44,10 @@ class King extends Piece {
         return arrayOfOpponentPositions;
     }
 
-    checkLegalPosition(yourPiecePositions, opponentPieceMoves) {
+    checkLegalPosition(yourPossiblePiecePositions, opponentPieceMoves) {
 
 
-        return legal;
+        return legalPositions;
     }
 
     _allPossiblePositions() {
