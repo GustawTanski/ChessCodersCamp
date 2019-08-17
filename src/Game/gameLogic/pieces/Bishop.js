@@ -15,6 +15,7 @@ class Bishop extends Piece {
 
         //wszystkie możliwe ruchy Gońca
         const possiblePositions = this._allPossiblePositions();
+        possiblePositions.push(this._allDiagonalPositions());
 
         //figura nie może znajdować się poza szchownicą
         const onBoardPositions = possiblePositions.filter(pos => {
@@ -34,48 +35,82 @@ class Bishop extends Piece {
         return legalPositions;
     }
 
+    _allDiagonalPositions() {
+        const arrDiagonal = [];
+        arrDiagonal.push(this._addUpRight);
+        arrDiagonal.push(this._addUpLeft);
+        arrDiagonal.push(this._addDownRight);
+        arrDiagonal.push(this._addDownLeft);
+        return arrDiagonal;
+    }
 
-    _allPossiblePositions() {
-        const possiblePositions = [];
 
-        possiblePositions.push({
+    _addUpRight() {
+        const arr = [];
+        if (this._position.y > this._position.x && this._position.y < 7) {
+            arr.push({
+                x: 7 - (this._position.y - this._position.x),
+                y: 7
+            })
+        } else {
+            arr.push({
+                x: 7,
+                y: 7 - (this._position.x - this._position.y)
+            })
+        }
+        return arr;
+    }
 
-        });
-        // Up right
-        // if (this._position.y > this._position.x) {
-        //     y = 7;
-        //     x = 7 - (y - x)
-        // } else {
-        //     y = 7 - (x - y);
-        //     x = 7;
-        // }
 
-        // // Down left
-        // if (x > y) {
-        //     y = 0;
-        //     x = 0 + (x - y)
-        // } else {
-        //     y = 0 + (y - x);
-        //     x = 0;
-        // }
 
-        // // Up left
-        // if (8 - x < y) {
-        //     y = 7;
-        //     x = (x + y) - 7;
-        // } else {
-        //     y = (x + y) - 0;
-        //     x = 0;
-        // }
+    _addUpLeft() {
+        const arr = [];
+        if (8 - this._position.x < this._position.y && this._position.y < 7) {
+            arr.push({
+                y: 7,
+                x: (this._position.x + this._position.y) - 7
+            })
+        } else {
+            arr.push({
+                y: (this._position.x + this._position.y) - 0,
+                x: 0
+            })
+        }
+        return arr;
+    }
 
-        // // Down right
-        // if (8 - x > y) {
-        //     y = 0;
-        //     x = (x + y) - 0;
-        // } else {
-        //     y = (x + y) - 7;
-        //     x = 7;
-        // }
+
+
+    _addDownRight() {
+        const arr = [];
+        if (this._position.x > this._position.y && this._position.y > 0) {
+            arr.push({
+                y: 0,
+                x: 0 + (this._position.x - this._position.y)
+            })
+        } else {
+            arr.push({
+                y: 0 + (this._position.y - this._position.x),
+                x: 0
+            })
+        }
+        return arr;
+    }
+
+    _addDownLeft() {
+        const arr = [];
+        if (8 - this._position.x > this._position.y && this._position.y > 0) {
+            arr.push({
+                y: 0,
+                x: (this._position.x + this._position.y) - 0
+            })
+        } else {
+            arr.push({
+                y: (this._position.x + this._position.y) - 7,
+                x: 7
+            })
+        }
+        return arr;
     }
 }
 
