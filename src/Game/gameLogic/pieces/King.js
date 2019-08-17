@@ -34,10 +34,10 @@ class King extends Piece {
 
     checkOpponentMoves(boardState, boardState2D) {
         const arrayOfOpponentPositions = [];
-        boardState2D.map((posX, posXValue) => {
-            for (const posY of posX) {
-                if (piece[posXValue][posY] !== undefined) {
-                    arrayOfOpponentPositions.push(piece[posXValue][posY].legalMoves(boardState))
+        boardState2D.map((posX, posXValue, boardState2D) => {
+            for (const posY in posX) {
+                if (boardState2D[posXValue][posY] !== undefined) {
+                    arrayOfOpponentPositions.push(boardState2D[posXValue][posY].legalMoves(boardState))
                 }
             }
         })
@@ -45,8 +45,22 @@ class King extends Piece {
     }
 
     checkLegalPosition(yourPossiblePiecePositions, opponentPieceMoves) {
+        const opponentLegalMoves = opponentPieceMoves.flat();
+        const legalMoves = yourPossiblePiecePositions;
 
 
+        const showTheSamePositions = legalMoves.map(el => {
+            for (const opponentMove of opponentLegalMoves) {
+                if (el.x === opponentMove.x && el.y === opponentMove.y) {
+                    return el;
+                }
+            }
+        })
+        const legalPositions = legalMoves.filter((el, index) => {
+            if (showTheSamePositions[index] === undefined) {
+                return legalMoves[index]
+            }
+        })
         return legalPositions;
     }
 
