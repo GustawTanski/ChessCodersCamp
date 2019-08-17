@@ -23,15 +23,21 @@ class Knight extends Piece {
         });
 
         //eliminacja pozycji na których już stoi figura tego samego koloru co skoczek - nie zbijamy samych siebie
-        const boardState2D = boardState.toTwoDimensionArray();
-        const legalPositions = onBoardPositions.filter(pos => {
-            if (boardState2D[pos.x][pos.y] == undefined || boardState2D[pos.x][pos.y].color != this._color) {
-                return true;
-            }
-        });
+        //w przypadku kiedy boardState jest pusty obsłuży bład TypeError
+        //spowodowany wywołaniem metody .toTwoDimensionArray() na pustym obiekcie
+        try {
+            const boardState2D = boardState.toTwoDimensionArray();
+            const legalPositions = onBoardPositions.filter(pos => {
+                if (boardState2D[pos.x][pos.y] == undefined || boardState2D[pos.x][pos.y].color != this._color) {
+                    return true;
+                }
+            });
+            
+            return legalPositions;
 
-        //zwraca legalne pozycje - tablicę elementów Coords
-        return legalPositions;
+        } catch (TypeError) {
+            return onBoardPositions;
+        }
     }
 
 
