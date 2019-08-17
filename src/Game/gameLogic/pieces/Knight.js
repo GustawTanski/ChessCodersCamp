@@ -5,8 +5,8 @@
 import Piece from "./Piece";
 class Knight extends Piece {
 
-    constructor(position, color, movementPoints, moveDirection) {
-        super(position, color, movementPoints, moveDirection);
+    constructor(position, color) {
+        super(position, color);
     }
 
     //metoda zwracająca tablicę z dostępnymi opcjami ruchu
