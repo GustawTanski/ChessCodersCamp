@@ -16,28 +16,9 @@ class Knight extends Piece {
     legalMoves(boardState) {
 
         const possiblePositions = this._allPossiblePositions();
-
-        //eliminacja pozycji poza szachownicą
-        const onBoardPositions = possiblePositions.filter(pos => {
-            return !this._isOutOfTheBoard(pos);
-        });
-
-        //eliminacja pozycji na których już stoi figura tego samego koloru co skoczek - nie zbijamy samych siebie
-        //w przypadku kiedy boardState jest pusty obsłuży bład TypeError
-        //spowodowany wywołaniem metody .toTwoDimensionArray() na pustym obiekcie
-        try {
-            const boardState2D = boardState.toTwoDimensionArray();
-            const legalPositions = onBoardPositions.filter(pos => {
-                if (boardState2D[pos.x][pos.y] == undefined || boardState2D[pos.x][pos.y].color != this._color) {
-                    return true;
-                }
-            });
-            
-            return legalPositions;
-
-        } catch (TypeError) {
-            return onBoardPositions;
-        }
+        const onBoardPositions = this._removeOutOfBoardPositions(possiblePositions);
+        const legalPositions = this._removePositionsTakenByYourOwnPieces(onBoardPositions, boardState);
+        return legalPositions;
     }
 
 
@@ -59,6 +40,34 @@ class Knight extends Piece {
             }
         }
         return possiblePositions;
+    }
+
+
+    //eliminacja pozycji poza szachownicą
+    _removeOutOfBoardPositions(positions) {
+        return positions.filter(pos => {
+            return !this._isOutOfTheBoard(pos);
+        });
+    }
+
+
+    //eliminacja pozycji na których już stoi figura tego samego koloru co skoczek - nie zbijamy samych siebie
+    //w przypadku kiedy boardState jest pusty obsłuży bład TypeError
+    //spowodowany wywołaniem metody .toTwoDimensionArray() na pustym obiekcie
+    _removePositionsTakenByYourOwnPieces(positions, boardState) {
+        try {
+            const boardState2D = boardState.toTwoDimensionArray();
+            const legalPositions = positions.filter(pos => {
+                if (boardState2D[pos.x][pos.y] == undefined || boardState2D[pos.x][pos.y].color != this._color) {
+                    return true;
+                }
+            });
+
+            return legalPositions;
+
+        } catch (TypeError) {
+            return positions;
+        }
     }
 
 }
