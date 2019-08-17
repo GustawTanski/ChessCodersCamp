@@ -1,17 +1,12 @@
 class Board {
     constructor() {
         this.pieces = new Array();
-        this.boardHistory = new BoardHistory();
         this.createPieces();
+        this.boardHistory = new BoardHistory();
+        this.check = false;
+        this.mate = false;
     }
 
-
-    movePiece(fromCoords, toCoords) {
-        if (this.findPiece(fromCoords).move(toCoords)) {
-            return true;
-        }
-        return false;
-    }
 
     legalMoves(coords) {
         return this.findPiece(coords).legalMoves(this.boardHistory);
@@ -20,6 +15,65 @@ class Board {
     findPiece(coords) {
         return this.pieces.find(piece => piece.position.x === coords.x && piece.position.y === coords.y);
     }
+
+
+    /* 
+    ZAŁOŻENIA:
+    1. Roszadę zaczyna król.
+       "W oficjalnych rozgrywkach szachowych wymaga się, by w pierwszej kolejności przemieścić króla, a następnie wieżę." (źródło: Wikipedia: Roszada)
+    2. Król potrafi stwierdzić, czy dany ruch jest roszadą
+       oraz zwrócić współrzędne uczestniczącej w roszadzie wieży
+       i współrzędne, na która dana wieża powinna się przesunąć.
+    3. Pionek potrafi stwierdzić, czy dany ruch jest biciem w przelocie
+       oraz zwrócić współrzędne pionka, który został zbity w przelocie.
+    */
+    movePiece(fromCoords, toCoords) {
+        if (this.isEmpty(toCoords)) {
+            const chosenPiece = this.findPiece(fromCoords);
+            if (chosenPiece instanceof Pawn) {
+                if (chosenPiece.isThisEnPassant(fromCoords, toCoords, this.boardHistory)) {
+                    const coordsOfCapturedPawn = chosenPiece.getCoordsOfCapturedPawn(fromCoords, toCoords, this.boardHistory);
+                    this.capturePiece(coordsOfCapturedPawn);
+                }
+            }
+            if (chosenPiece instanceof King) {
+                if (chosenPiece.isThisCastling(fromCoords, toCoords, this.boardHistory)) {
+                    const coordsOfTheRook = chosenPiece.getCoordsOfTheRookInCastling(fromCoords, toCoords, this.boardHistory);
+                    this.findPiece(coordsOfTheRook.fromCoords).move(coordsOfTheRook.toCoords);
+                }
+            }
+        } else {
+            this.capturePiece(toCoords);
+        }
+        this.findPiece(fromCoords).move(toCoords);
+        this.isCheck();
+        this.isMate();
+        this.updateBoardHistory();
+        return true;
+    }
+
+    isEmpty(coords) {
+        if (this.findPiece(coords)) {
+            return false;
+        }
+        return true;
+    }
+
+    capturePiece(coords) {
+        this.findPiece(coords).pieceLoss();
+    }
+
+    /* DO UZUPELNIENIA */
+    isCheck() {}
+
+    isMate() {}
+
+
+    updateBoardHistory() {
+        const newBoardState = new BoardState(this.pieces);
+        this.boardHistory.push(newBoardState);
+    }
+
 
 
     createPieces() {
