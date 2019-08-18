@@ -1,9 +1,9 @@
-import Knight from "../pieces/Knight";
+// import Knight from "../pieces/Knight";
 import Bishop from "../pieces/Bishop";
-import Pawn from "../pieces/Pawn";
-import King from "../pieces/King";
-import Queen from "../pieces/Queen";
-import Rook from "../pieces/Rook";
+// import Pawn from "../pieces/Pawn";
+// import King from "../pieces/King";
+// import Queen from "../pieces/Queen";
+// import Rook from "../pieces/Rook";
 
 class BoardState {
     constructor(board) {
@@ -47,7 +47,7 @@ class BoardState {
         let board = new Array();
 
         for (let flatPiece of boardState) {
-            board.push(this._createProperPiece(flatPiece)); 
+            board.push(this._createProperPiece(flatPiece));
         }
 
         return board;
@@ -79,7 +79,7 @@ class BoardState {
     _emptyArrayHelper(size) {
         const emptyArray = [];
 
-        for (let i = 0; i < size ; i++){
+        for (let i = 0; i < size; ++i){
             emptyArray.push(undefined);
         }
 
@@ -95,7 +95,7 @@ class BoardState {
         const CurrentPiece = pieceTypes.find(type => type.name == flatPiece.name);
 
         if (!CurrentPiece) throw Error("Improper piece name");
-        
+
         return new CurrentPiece(flatPiece.position, flatPiece.color);
     }
 }
