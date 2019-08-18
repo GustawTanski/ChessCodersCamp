@@ -78,11 +78,15 @@ class InterfaceBoard{
      * @param {Object} coords coordinates of the field to be cleared (entire board will be cleared if no argument is provided)
      */
     clearPieces(coords = null){
-        if(coords){this._fields[coords.x][coords.y].removePiece();}
+        if(coords){
+            this._fields[coords.x][coords.y].removePiece();
+            this._currentPosition[coords.x][coords.y] = null;
+        }
         else{
             for(let i=0;i<this._fields.length;i++){
                 for(let j=0;j<this._fields.length;j++){
                     this._fields[i][j].removePiece();
+                    this._currentPosition[i][j] = null;
                 }
             }
         }
@@ -108,7 +112,6 @@ class InterfaceBoard{
     highlightFields(coordsArray){
         this.clearHighlights();
         for(let i=0;i<coordsArray.length;i++){
-            console.log(this);
             this._fields[coordsArray[i].x][coordsArray[i].y].applyHighlight();
         }
     }
@@ -161,7 +164,7 @@ class InterfaceBoard{
         for(let i=0;i<8;i++){
            position.push([]);
             for(let j=0;j<8;j++){
-                null;
+                position[i][j] = null;
             }
         }
         return position;
