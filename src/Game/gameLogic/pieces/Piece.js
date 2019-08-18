@@ -35,15 +35,12 @@ class Piece {
         this._position = { x, y }
     }
 
-    legalMoves(boardState) {
-        // metoda sprawdzająca możliwe ruchy
-    }
-
     pieceLoss() {
         // metoda wywoływana w momencie gdy nasz pionek został zbity
         this.isBeaten = true;
-        this._position = { x: null, y: null }
+        this._position = { x: -1, y: -1 }
     }
+
     _isOutOfTheBoard(toCoords) {
         //metoda sprawdzająca czy wybrane pole nie jest poza planszą
         //jezeli zwraca TRUE - jest poza plansza
@@ -53,6 +50,10 @@ class Piece {
             return true;
         }
         return false;
+    }
+
+    legalMoves(boardState) {
+
     }
 }
 
