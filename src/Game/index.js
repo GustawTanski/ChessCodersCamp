@@ -49,7 +49,6 @@ class Game {
 	_onPieceClicked(coords, piece) {
 		// czy to figura gracza, który ma ruch)
 		if (piece.color != this._currentPlayer) return;
-		console.log("jestem tu");
 		// ustawia pionek jako aktywny
 		this._activePiece = piece;
 		// sprawdza możliwe ruchy
