@@ -14,6 +14,13 @@
     </body>
     <script src="boardInterface.js"></script>
     <script>
+/*###############################################################################################*/
+
+let onFieldClick = function(arg){
+    console.log("Kliknięto w pole!");
+    console.log(arg);
+}
+/*###############################################################################################*/
 
 let board = new InterfaceBoard(document.getElementById("board-container"));
 board.highlightFields([{x:2,y:2},{x:0,y:7}]);
@@ -57,7 +64,7 @@ setTimeout(function(){
 },4500);
 
 /*###############################################################################################*/
-let board2 = new InterfaceBoard(document.getElementById("board-container2"));
+let board2 = new InterfaceBoard(document.getElementById("board-container2"),onFieldClick);
 let mockPosition = [];
 let firstRow = ["rook","knight","bishop","queen","king","bishop","knight","rook"];
 for(let i=0;i<8;i++){

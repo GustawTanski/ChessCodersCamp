@@ -1,8 +1,13 @@
 class InterfaceBoard{
-    /** 
-     * Constructor creating a new board in provided <div>
-    */
-    constructor(parentNode){
+    /**
+     * Constructor creating a new chessboard node within specified parent node
+     * @param {*} parentNode parent node. The board will be created on a new <div> within the specified node.
+     * @param {*} onFieldClick the function to be called with field's coordinates ({x:0,y:0} object) when the field is clicked.
+     */
+    constructor(parentNode, onFieldClick = function(coords){
+                                                console.log("Click on field "+InterfaceBoard.fieldNameFromCoords(coords))
+                                            })
+    {
         let node = document.createElement("div");
         this._node = node;
         parentNode.appendChild(node);
@@ -12,11 +17,13 @@ class InterfaceBoard{
         this._fields = [];
         this._currentPosition = this._emptyPositionArray();
 
+        this._onFieldClick = onFieldClick;
+
         for(let i=0;i<8;i++){
             this._fields.push([]);
             for(let j=0;j<8;j++){
                 let coords = {x: i,y: j};
-                let field = new InterfaceField(coords);
+                let field = new InterfaceField(coords, this._onFieldClick);
 
                 node.appendChild(field.node);
                 this._fields[i][j] = field;
@@ -177,20 +184,27 @@ class InterfaceBoard{
 class InterfaceField {
     /**
      * Constructor creating a single field of the board, with specified coordinates
-     * @param {Object} coords coordinates specified as {x:0, y:0} object
+     * @param {Object} coords  - coordinates in the {x:0,y:0} object format
+     * @param {Function} onClick - the function to be called with field's coordinates ({x:0,y:0} object) when the field is clicked
      */
-    constructor(coords) {
+    constructor(coords, onClick) {
         let fieldColor = (coords.x + coords.y) % 2 ? "white" : "black";
         let fieldName = InterfaceBoard.fieldNameFromCoords(coords);
 
         let node = document.createElement("div");
         this._node = node;
+        this._coords = coords;
+        this._onClick = onClick;
 
         node.id = fieldName;
         node.classList.add("field");
         node.classList.add('_' + fieldName[0]);
         node.classList.add('_' + fieldName[1]);
         node.classList.add(fieldColor);
+
+        node.onclick = function(){
+            this._onClick(this._coords);
+        }.bind(this);
 
         this._currentPiece = null;
     }
