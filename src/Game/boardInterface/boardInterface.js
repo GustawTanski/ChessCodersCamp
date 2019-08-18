@@ -10,52 +10,67 @@ class InterfaceBoard{
         this._node.classList.add("orientation--white");
 
         this._fields = [];
-        this._position = [];
+        this._currentPosition = this._emptyPositionArray();
 
         for(let i=0;i<8;i++){
             this._fields.push([]);
-            this._position.push([]);
             for(let j=0;j<8;j++){
                 let coords = {x: i,y: j};
                 let field = new InterfaceField(coords);
 
                 node.appendChild(field.node);
                 this._fields[i][j] = field;
-                this._position[i][j] = null;
             }
         }
     }
 
+    /**
+     * Returns the node the InterfaceBoard is built on
+     */
     get node(){
         return this._node;
     }
 
-    setPosition(boardState = [{boardState: []}]) {
-        let newPosition = boardState.boardState;
+    /**
+     * Substitutes existing position with the new one
+     * @param {BoardState} boardState 
+     * @param {boolean} fullReset specifies whether pieces unchanged between positions should be removed prior to setting the new position
+     */
+    setPosition(boardState = [{boardState: []}], fullReset = false) {
+        let newPosition = this._positionFromBoardstate(boardState);
 
         this.clearHighlights();
-        this.clearPieces();
-        for (let i = 0; i < newPosition.length; i++) {
-            let coords = {
-                x: newPosition[i].newPosition[0],
-                y: newPosition[i].newPosition[1]
-            }
-            let piece = newPosition[i].piece;
-            let color = newPosition[i].color;
+        if(fullReset){
+            this.clearPieces();
+        }
 
-            this.placePiece(coords, piece, color);
+        for(let i=0;i<8;i++){
+            for(let j=0;j<8;j++){
+                let coords = {x: i, y: j}
+
+                if(newPosition[i][j]){
+                    let piece = newPosition[i][j].piece.toLowerCase();
+                    let color = newPosition[i][j].color;
+                    this.placePiece(coords,piece,color);
+                }
+                else if(this._currentPosition){
+                    this.clearPieces(coords);
+                }
+            }
         }
     }
 
-
     /**
-     * Creates a new chess piece on field specified by coordinates
+     * Places a new chess piece on field specified by coordinates (if there's a piece present there, it gets replaced)
      * @param {Object} coords coordinates of the field where the piece is to be placed (as {x:0, y:0} object)
      * @param {String} piece name of the chess piece (pawn, rook, knight, bishop, queen or king)
      * @param {String} color color of the chess piece (white or black)
      */
     placePiece(coords, piece, color){
-        this._fields[coords.x][coords.y].placePiece(piece,color);
+        const field = this._fields[coords.x][coords.y];
+        field.placePiece(piece,color);
+
+        this._currentPosition[coords.x][coords.y] = field.currentPiece;
     }
 
     /**
@@ -63,11 +78,11 @@ class InterfaceBoard{
      * @param {Object} coords coordinates of the field to be cleared (entire board will be cleared if no argument is provided)
      */
     clearPieces(coords = null){
-        if(coords){this._fields[coords.x][coords.y].clearPieces();}
+        if(coords){this._fields[coords.x][coords.y].removePiece();}
         else{
             for(let i=0;i<this._fields.length;i++){
                 for(let j=0;j<this._fields.length;j++){
-                    this._fields[i][j].clearPieces();
+                    this._fields[i][j].removePiece();
                 }
             }
         }
@@ -80,19 +95,10 @@ class InterfaceBoard{
      */
     move(originCoords, targetCoords){
         const originField = this._fields[originCoords.x][originCoords.y];
-        const targetField = this._fields[targetCoords.x][targetCoords.y];
-        const piece = originField.pickUpPiece();
-        if(piece){
-            piece.classList.add("moving");
-            const pieceStyle = getComputedStyle(piece);
-            const transitionDuration = parseFloat(pieceStyle.transitionDuration);
-            setTimeout(function(){
-                targetField.putDownPiece(piece);
-                setTimeout(function(){
-                    piece.classList.remove("moving");
-                },100);
-            },transitionDuration*1000);
-        }
+        const piece = originField.currentPiece;
+        
+        this.clearPieces(originCoords);
+        this.placePiece(targetCoords,piece.piece,piece.color);
     }
 
     /**
@@ -128,6 +134,38 @@ class InterfaceBoard{
     static labelY(yIndex){
         return ""+(yIndex+1);
     }
+
+    /**
+     * Helper method translating the BoardState object format to 2-dimensional array of InterfacePiece objects
+     * @param {BoardState} boardState 
+     */
+    _positionFromBoardstate(boardState){
+        let boardstatePosition = boardState.boardState;
+        let position = this._emptyPositionArray();
+
+        for (let i = 0; i < boardstatePosition.length; i++) {
+            let x = boardstatePosition[i].position[0];
+            let y = boardstatePosition[i].position[1];
+            let pieceName = boardstatePosition[i].name.toLowerCase();
+            let pieceColor = boardstatePosition[i].color;
+            position[x][y] = new InterfacePiece(pieceName, pieceColor);
+        }
+        return position;
+    }
+
+    /**
+     * Helper method creating empty 8x8 array
+     */
+    _emptyPositionArray(){
+        let position = [];
+        for(let i=0;i<8;i++){
+           position.push([]);
+            for(let j=0;j<8;j++){
+                null;
+            }
+        }
+        return position;
+    }
 }
 
 /**
@@ -162,18 +200,6 @@ class InterfaceField {
         return this._currentPiece;
     }
 
-    /**
-     * Gets the last piece put on the field
-     */
-    pickUpPiece(){
-        let piece = this._node.querySelector(".piece:last-of-type");
-        return piece;
-    }
-
-    putDownPiece(piece){
-        this._node.appendChild(piece);
-    }
-
     isEmpty(){
         return !this._currentPiece;
     }
@@ -190,56 +216,119 @@ class InterfaceField {
         this._node.classList.remove("highlighted");
     }
 
-    clearPieces(){
-        let piecesOnField = this._node.querySelectorAll(".piece");
-        for(let i=0;i<piecesOnField.length;i++){
-            piecesOnField[i].remove();
+    /**
+     * Removes the current piece from the field. Logical removal is immediate, actual removal from DOM is delayed by the time of exit transition
+     */
+    removePiece(){
+        if(this._currentPiece){
+            let removedPieceNode = this._currentPiece.node;
+            this._currentPiece = null;
+
+            if(removedPieceNode){
+                removedPieceNode.classList.add("moving");
+                const removedPieceStyle = getComputedStyle(removedPieceNode);
+                const animationWindow = parseFloat(removedPieceStyle.transitionDuration);
+
+                if(animationWindow>0){
+                    setTimeout(function(){
+                        removedPieceNode.remove();
+                    },animationWindow*1000);
+                }
+                else{
+                    removedPieceNode.remove();
+                }
+            }
         }
     }
 
-    removePiece(animationWindow=0){
-        let piece = this._currentPiece;
-        piece.classList.add("moved");
-        this._currentPiece = null;
-        setTimeout(function(){
-            piece.remove();
-        },animationWindow*1000);
+    /**
+     * Sets the field to contain the piece specified. If a piece is already present, it gets replaced.
+     * @param {String} piece type of the piece
+     * @param {String} color color of the piece
+     */
+    placePiece(piece="pawn", color="white"){
+        let newPiece = new InterfacePiece(piece,color,null);
+        if(!newPiece.equals(this._currentPiece)){
+            this.removePiece();
+            this._currentPiece = newPiece;
+            this._node.appendChild(this._currentPiece.node);
+        }
+    }
+}
+
+/**
+ * Supporting class for the InterfaceBoard - this class and its methods should never be accessed from outside InterfaceBoard or itself.
+ */
+class InterfacePiece{
+    constructor(piece, color){
+        this._piece = piece;
+        this._color = color;
+        this._node = null;
     }
 
-    placePiece(piece="pawn", color="white"){
-        let pieceLayer = document.createElement("div");
-        pieceLayer.classList.add("piece");
+    get piece(){
+        return this._piece;
+    }
+    get color(){
+        return this._color;
+    }
 
-        switch(piece){
+    /**
+     * Returns the <div> node representing the piece. The node is created on first call.
+     */
+    get node(){
+        if(!this._node){
+            this._setUpNode();
+        }
+        return this._node;
+    }
+    
+    /**
+     * Simple method comparing whether the argument piece is logically equal (is the same kind and color) to the one it's being compared to.
+     * This method does NOT check position and node bindings - two white pawns will always be equal regardless of where they are.
+     * @param {InterfacePiece} otherPiece the piece to be compared
+     */
+    equals(otherPiece){
+        return otherPiece && this.piece===otherPiece.piece && this.color===otherPiece.color;
+    }
+
+    /**
+     * Helper method creating the visual representation of the piece as a <div> node with appropriate classes for CSS styling
+     */
+    _setUpNode(){
+        let pieceNode = document.createElement("div");
+        pieceNode.classList.add("piece");
+
+        switch(this._piece){
             case "king":
-                pieceLayer.classList.add("k");
+                pieceNode.classList.add("k");
                 break;
             case "queen":
-                pieceLayer.classList.add("q");
+                pieceNode.classList.add("q");
                 break;
             case "rook":
-                pieceLayer.classList.add("r");
+                pieceNode.classList.add("r");
                 break;
             case "bishop":
-                pieceLayer.classList.add("b");
+                pieceNode.classList.add("b");
                 break;
             case "knight":
-                pieceLayer.classList.add("kn");
+                pieceNode.classList.add("kn");
                 break;
             case "pawn":
-                pieceLayer.classList.add("p");
+                pieceNode.classList.add("p");
                 break;
             default:
-                pieceLayer.classList.add("p");
+                pieceNode.classList.add("p");
         }
 
-        if(color==="black"){
-            pieceLayer.classList.add("bl");
+        if(this._color==="black"){
+            pieceNode.classList.add("bl");
         }
         else{
-            pieceLayer.classList.add("wh");
+            pieceNode.classList.add("wh");
         }
 
-        this._node.appendChild(pieceLayer);
+        this._node = pieceNode;
     }
 }
