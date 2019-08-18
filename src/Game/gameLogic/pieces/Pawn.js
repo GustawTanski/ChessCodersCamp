@@ -1,6 +1,6 @@
 import position from "./position";
 
-// TODO:: bicie w przelocie (jak wymyślę jak to zrobić), promocja
+// TODO:: bicie w przelocie (jak wymyślę jak to zrobić), promocja, inne ruchy zależne od ustawienia pionka
 
 class Pawn extends position {
     constructor(position, color) {
