@@ -13,37 +13,6 @@ class Queen extends Piece {
     }
 
     legalMoves(boardState) {
-        // const board2d = [
-        //     [],
-        //     [],
-        //     [],
-        //     [],
-        //     [],
-        //     [],
-        //     [],
-        //     []
-        // ];
-        // for (let i = 0; i < 8; i++)
-        //     for (let j = 0; j < 8; j++)
-        //         board2d[i].push(undefined);
-        // board2d[4][6] = new Queen({
-        //     "x": 4,
-        //     "y": 6
-        // }, "black")
-        // board2d[6][4] = new Queen({
-        //     "x": 6,
-        //     "y": 4
-        // }, "white")
-        // board2d[2][2] = new Queen({
-        //     "x": 2,
-        //     "y": 2
-        // }, "white")
-        // board2d[6][6] = new Queen({
-        //     "x": 6,
-        //     "y": 6
-        // }, "black")
-
-        // console.log(board2d)
         const board2d = boardState.toTwoDimensionArray();
         const possiblePositions = [];
         possiblePositions.push(...(this._addPerpendicular(board2d)));
