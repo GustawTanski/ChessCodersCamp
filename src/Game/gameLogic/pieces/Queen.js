@@ -1,86 +1,114 @@
 import Piece from './Piece'
 
 const direction = {
-    RIGHT: 'right',
-    LEFT: 'left',
-    UP: 'up',
-    DOWN: 'down'
+    ASC: 'asc', //ascending (up or right)
+    DESC: 'desc',//descending (down or left)
+    NONE: 'none'
 }
 
 class Queen extends Piece {
 
     constructor(position, color) {
-        super(position, color);       
+        super(position, color);
     }
 
     legalMoves(boardState) {
+        // const board2d = [
+        //     [],
+        //     [],
+        //     [],
+        //     [],
+        //     [],
+        //     [],
+        //     [],
+        //     []
+        // ];
+        // for (let i = 0; i < 8; i++)
+        //     for (let j = 0; j < 8; j++)
+        //         board2d[i].push(undefined);
+        // board2d[4][6] = new Queen({
+        //     "x": 4,
+        //     "y": 6
+        // }, "black")
+        // board2d[6][4] = new Queen({
+        //     "x": 6,
+        //     "y": 4
+        // }, "white")
+        // board2d[2][2] = new Queen({
+        //     "x": 2,
+        //     "y": 2
+        // }, "white")
+        // board2d[6][6] = new Queen({
+        //     "x": 6,
+        //     "y": 6
+        // }, "black")
+
+        // console.log(board2d)
         const board2d = boardState.toTwoDimensionArray();
         const possiblePositions = [];
-        possiblePositions.push(this._addBothPerpendicular(board2d));
-        possiblePositions.push(this._addBothDiagonal(board2d));
-        const enemyPossiblePositons = possiblePositions.filter(pos =>
-            board2d[pos.x][pos.y].color !== pos.color
-        )
-        return enemyPossiblePositons;    
+        possiblePositions.push(...(this._addPerpendicular(board2d)));
+        possiblePositions.push(...(this._addDiagonal(board2d)));
+        return possiblePositions;
     }
 
-    _addBothPerpendicular(board2d) {
+    _addPerpendicular(board2d) {
         const arr = [];
-        arr.push(this._addVertical(board2d));
-        arr.push(this._addHorizontal(board2d));
+        arr.push(...(this._addHalfAxis(direction.NONE, direction.ASC, board2d)));
+        arr.push(...(this._addHalfAxis(direction.NONE, direction.DESC, board2d)));
+        arr.push(...(this._addHalfAxis(direction.DESC, direction.NONE, board2d)));
+        arr.push(...(this._addHalfAxis(direction.ASC, direction.NONE, board2d)));
         return arr;
     }
 
-    _addVertical(board2d) {
+    _addDiagonal(board2d) {
         const arr = [];
-        for (let i = 0; i < 8 && board2d[i][this._position.y] == null; i++)
-            if (i !== this._position.x)
-                possiblePositions.push({
-                    x: i,
-                    y: this._position.y
-                })
+        arr.push(...(this._addHalfAxis(direction.ASC, direction.ASC, board2d)));
+        arr.push(...(this._addHalfAxis(direction.ASC, direction.DESC, board2d)));
+        arr.push(...(this._addHalfAxis(direction.DESC, direction.ASC, board2d)));
+        arr.push(...(this._addHalfAxis(direction.DESC, direction.DESC, board2d)));
         return arr;
     }
 
-    _addHorizontal(board2d) {
+    _addHalfAxis(xDirection, yDirection, board2d) {
         const arr = [];
-        for (let i = 0; i < 8 && board2d[i][this._position.y] == null ; i++)
-            if (i !== this._position.y)
-                possiblePositions.push({
-                    x: this._position.x,
-                    y: i
-                })
-        return arr;
-    }
+        const xIncrement = this._getIncrement(xDirection);
+        const yIncrement = this._getIncrement(yDirection);
 
+        //Brzydki rozbudowany warunek, sprawdza czy na kolejnym polu jest przeciwnik albo czy pole jest puste i potem je dodaje
+        //Niezbyt SOLID, 
+        for (let i = this.position.x, j = this.position.y; 
 
-    _addBothDiagonal(board2d) {
-        const arr = [];
-        arr.push(_addHalfDiagonal(direction.RIGHT, direction.UP, board2d));
-        arr.push(_addHalfDiagonal(direction.RIGHT, direction.DOWN, board2d));
-        arr.push(_addHalfDiagonal(direction.LEFT, direction.UP, board2d));
-        arr.push(_addHalfDiagonal(direction.LEFT, direction.DOWN, board2d));
-        return arr;
-    }
-
-    _addHalfDiagonal(xDirection, yDirection, board2d) {
-        const arr = [];
-        const xIncrement = xDirection === 'right' ? 1 : -1;
-        const yIncrement = yDirection === 'up' ? 1 : -1;
-        for (let i = this._position.x; !this._isOutOfTheBoard({
+            !this._isOutOfTheBoard({
                 x: i + xIncrement,
-                y: 0
-            }); i++)
-            for (let j = this.position.y; !this._isOutOfTheBoard({
-                    x: 0,
-                    y: j + yIncrement
-                }) && board2d[i + xIncrement][j + yIncrement] == null; j++) {
-                arr.push({
-                    x: i + xIncrement,
-                    y: j + yIncrement
-                })
-            }
+                y: j + yIncrement
+            }) && (board2d[i + xIncrement][j + yIncrement] == undefined ||
+                board2d[i + xIncrement][j + yIncrement].color !== this.color);
+                
+                 i += xIncrement, j += yIncrement) {
+            arr.push({
+                x: i + xIncrement,
+                y: j + yIncrement
+            });
+            //uniemożliwia przeskakiwanie przez pionki
+            if (board2d[i + xIncrement][j + yIncrement] != undefined && board2d[i + xIncrement][j + yIncrement].color !== this.color)
+                break;
+        }
+
         return arr;
+    }
+
+    _getIncrement(direction) {
+        switch (direction) {
+            case 'asc':
+                return 1;
+                break;
+            case 'desc':
+                return -1;
+                break;
+            case 'none':
+                return 0;
+                break;
+        }
     }
 }
 
