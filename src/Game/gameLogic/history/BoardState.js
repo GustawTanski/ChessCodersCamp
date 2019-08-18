@@ -1,9 +1,9 @@
-// import Knight from "../pieces/Knight";
+import Knight from "../pieces/Knight";
 import Bishop from "../pieces/Bishop";
-// import Pawn from "../pieces/Pawn";
-// import King from "../pieces/King";
-// import Queen from "../pieces/Queen";
-// import Rook from "../pieces/Rook";
+import Pawn from "../pieces/Pawn";
+import King from "../pieces/King";
+import Queen from "../pieces/Queen";
+import Rook from "../pieces/Rook";
 
 class BoardState {
     constructor(board) {

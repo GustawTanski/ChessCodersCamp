@@ -1,8 +1,19 @@
+import Pawn from "./pieces/Pawn";
+import Rook from "./pieces/Rook";
+import Bishop from "./pieces/Bishop";
+import King from "./pieces/King";
+import Queen from "./pieces/Queen";
+import Knight from "./pieces/Knight";
+import BoardHistory from "./history/BoardHistory";
+import BoardState from "./history/BoardState";
+
+
 class Board {
     constructor() {
         this.pieces = new Array();
         this.createPieces();
         this.boardHistory = new BoardHistory();
+        this.updateBoardHistory();
         this.check = false;
         this.mate = false;
     }
@@ -49,7 +60,7 @@ class Board {
         this.isCheck();
         this.isMate();
         this.updateBoardHistory();
-        return true;
+        return this.boardHistory.last();
     }
 
     isEmpty(coords) {
@@ -165,3 +176,5 @@ class Board {
         }
     }
 }
+
+export default Board;

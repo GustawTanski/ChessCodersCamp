@@ -1,8 +1,7 @@
-import position from "./position";
-
+import Piece from "./Piece";
 // TODO:: bicie w przelocie (jak wymyślę jak to zrobić), promocja, inne ruchy zależne od ustawienia pionka
 
-class Pawn extends position {
+class Pawn extends Piece {
     constructor(position, color) {
         super(position, color);
         this._wasMoved = false;
@@ -35,6 +34,7 @@ class Pawn extends position {
         Zwraca wszystkie możliwe ruchy pionka
     */
     _allPossiblePositions(boardState) {
+        console.log(boardState);
         const possiblePositions = [];
 
         this._forwardMoves(possiblePositions);
@@ -77,4 +77,4 @@ class Pawn extends position {
     }
 }
 
-export default Knight;
+export default Pawn;

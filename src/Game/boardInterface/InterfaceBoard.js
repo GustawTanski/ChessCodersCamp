@@ -1,12 +1,15 @@
-class InterfaceBoard{
+import "./board.css";
+import BoardState from "../gameLogic/history/BoardState"
+
+export default class InterfaceBoard{
     /**
      * Constructor creating a new chessboard node within specified parent node
      * @param {*} parentNode parent node. The board will be created on a new <div> within the specified node.
      * @param {*} onFieldClick the function to be called with field's coordinates ({x:0,y:0} object) when the field is clicked.
      */
     constructor(parentNode, onFieldClick = function(coords){
-                                                console.log("Click on field "+InterfaceBoard.fieldNameFromCoords(coords))
-                                            })
+        console.log("Click on field "+InterfaceBoard.fieldNameFromCoords(coords))
+    })
     {
         let node = document.createElement("div");
         this._node = node;
@@ -43,7 +46,7 @@ class InterfaceBoard{
      * @param {BoardState} boardState 
      * @param {boolean} fullReset specifies whether pieces unchanged between positions should be removed prior to setting the new position
      */
-    setPosition(boardState = [{boardState: []}], fullReset = false) {
+    setPosition(boardState = new BoardState([]), fullReset = false) {
         let newPosition = this._positionFromBoardstate(boardState);
 
         this.clearHighlights();
@@ -152,10 +155,10 @@ class InterfaceBoard{
     _positionFromBoardstate(boardState){
         let boardstatePosition = boardState.boardState;
         let position = this._emptyPositionArray();
-
+        console.log(boardstatePosition, position);
         for (let i = 0; i < boardstatePosition.length; i++) {
-            let x = boardstatePosition[i].position[0];
-            let y = boardstatePosition[i].position[1];
+            let x = boardstatePosition[i].position.x;
+            let y = boardstatePosition[i].position.y;
             let pieceName = boardstatePosition[i].name.toLowerCase();
             let pieceColor = boardstatePosition[i].color;
             position[x][y] = new InterfacePiece(pieceName, pieceColor);
