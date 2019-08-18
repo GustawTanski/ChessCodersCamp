@@ -2,25 +2,49 @@ class InterfaceBoard{
     /** 
      * Constructor creating a new board in provided <div>
     */
-    constructor(node){
+    constructor(parentNode){
+        let node = document.createElement("div");
         this._node = node;
-        this._fields = [];
+        parentNode.appendChild(node);
+        node.id = "chessboard";
         this._node.classList.add("orientation--white");
+
+        this._fields = [];
+        this._position = [];
 
         for(let i=0;i<8;i++){
             this._fields.push([]);
+            this._position.push([]);
             for(let j=0;j<8;j++){
                 let coords = {x: i,y: j};
                 let field = new InterfaceField(coords);
 
                 node.appendChild(field.node);
                 this._fields[i][j] = field;
+                this._position[i][j] = null;
             }
         }
     }
 
     get node(){
         return this._node;
+    }
+
+    setPosition(boardState = [{boardState: []}]) {
+        let newPosition = boardState.boardState;
+
+        this.clearHighlights();
+        this.clearPieces();
+        for (let i = 0; i < newPosition.length; i++) {
+            let coords = {
+                x: newPosition[i].newPosition[0],
+                y: newPosition[i].newPosition[1]
+            }
+            let piece = newPosition[i].piece;
+            let color = newPosition[i].color;
+
+            this.placePiece(coords, piece, color);
+        }
     }
 
 
@@ -126,10 +150,16 @@ class InterfaceField {
         node.classList.add('_' + fieldName[0]);
         node.classList.add('_' + fieldName[1]);
         node.classList.add(fieldColor);
+
+        this._currentPiece = null;
     }
 
     get node(){
         return this._node;
+    }
+    
+    get currentPiece(){
+        return this._currentPiece;
     }
 
     /**
@@ -144,9 +174,8 @@ class InterfaceField {
         this._node.appendChild(piece);
     }
 
-    hasPieces(){
-        let piecesOnField = this._node.querySelectorAll(".piece");
-        return piecesOnField.length>0;
+    isEmpty(){
+        return !this._currentPiece;
     }
 
     toggleHighlight(){
@@ -166,6 +195,15 @@ class InterfaceField {
         for(let i=0;i<piecesOnField.length;i++){
             piecesOnField[i].remove();
         }
+    }
+
+    removePiece(animationWindow=0){
+        let piece = this._currentPiece;
+        piece.classList.add("moved");
+        this._currentPiece = null;
+        setTimeout(function(){
+            piece.remove();
+        },animationWindow*1000);
     }
 
     placePiece(piece="pawn", color="white"){
