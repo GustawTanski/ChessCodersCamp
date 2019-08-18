@@ -66,7 +66,7 @@ class BoardState {
         }
 
         for (let flatPiece of this._boardState) {
-            array2d[flatPiece.position[0]][flatPiece.position[1]] = this._createProperPiece(flatPiece);
+            array2d[flatPiece.position.x][flatPiece.position.y] = this._createProperPiece(flatPiece);
         }
 
         return array2d;
