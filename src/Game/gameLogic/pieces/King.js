@@ -4,14 +4,58 @@ class King extends Piece {
     constructor(position, color) {
         super(position, color);
         this.isMoved = false;
+        this.rookDirectionInCastling = null;
     }
 
     move(toCoords) {
         //metoda odpowiedzialna za poruszanie się pionka 
-        //i jeżeli król wykonał jakiś ruch zmienia flage na false
+        //i jeżeli król wykonał jakiś ruch zmienia flage na true
         const { x, y } = toCoords;
-        this._position = { x, y }
-        this.isMoved = false;
+        this._position = { x, y };
+        this.isMoved = true;
+    }
+    // sprawdza czy roszada jest dozwolona
+    isThisCastling(toCoords, boardState) {
+        if (!this.isMoved && this.checkCastling(toCoords, boardState) && this._position == x - 2 || this._position == x + 2) {
+            return true;
+        }
+        return false;
+    }
+
+    //sprawdza czy na drodze do wieży nie stoi zaden inny pionek
+    checkCastling(toCoords, boardState) {
+        const { x, y } = toCoords;
+        const boardState2D = boardState.toTwoDimensionArray();
+        let i = this._position.x;
+        if (this._position.x > x) {
+            for (i; i >= 1; i--) {
+                if (boardState2D[i][y] !== undefined) return false
+            }
+        } else {
+            for (i; i <= 6; i++) {
+                if (boardState2D[i][y] !== undefined) return false
+            }
+        }
+        return true;
+    }
+    //zwraca coordy na które powinna udac sie wieza po roszadzie
+    getCoordsOfTheRookAfterCastling() {
+        switch (this.rookDirectionInCastling) {
+            case "right": return { x: 3, y: this._position.y }
+            case "left": return { x: 5, y: this._position.y }
+        }
+    }
+    // zwraca coordy wieży która bierze udział w roszadzie
+    getCoordsOfTheRookInCastling(toCoords) {
+        const { x, y } = toCoords;
+        if (this._position == x - 2) {
+            this.rookDirectionInCastling = "left";
+            return { x: 7, y }
+        }
+        else if (this._position == x + 2) {
+            this.rookDirectionInCastling = "right";
+            return { x: 0, y }
+        }
     }
 
     legalMoves(boardState) {
@@ -37,17 +81,16 @@ class King extends Piece {
         boardState2D.map((posX, posXValue, boardState2D) => {
             for (const posY in posX) {
                 if (boardState2D[posXValue][posY] !== undefined) {
-                    arrayOfOpponentPositions.push(boardState2D[posXValue][posY].legalMoves(boardState))
+                    arrayOfOpponentPositions.push(boardState2D[posXValue][posY].legalMoves(boardState));
                 }
             }
-        })
+        });
         return arrayOfOpponentPositions;
     }
 
     checkLegalPosition(yourPossiblePiecePositions, opponentPieceMoves) {
         const opponentLegalMoves = opponentPieceMoves.flat();
         const legalMoves = yourPossiblePiecePositions;
-
 
         const showTheSamePositions = legalMoves.map(el => {
             for (const opponentMove of opponentLegalMoves) {
@@ -58,9 +101,9 @@ class King extends Piece {
         })
         const legalPositions = legalMoves.filter((el, index) => {
             if (showTheSamePositions[index] === undefined) {
-                return legalMoves[index]
+                return legalMoves[index];
             }
-        })
+        });
         return legalPositions;
     }
 
