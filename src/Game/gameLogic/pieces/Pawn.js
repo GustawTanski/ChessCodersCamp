@@ -14,6 +14,7 @@ class Pawn extends Piece {
     }
 
     legalMoves(boardState) {
+        boardState = boardState.last();
         const possiblePositions = this._allPossiblePositions(boardState);
 
         const onBoardPositions = possiblePositions.filter(pos => !this._isOutOfTheBoard(pos));
@@ -61,13 +62,18 @@ class Pawn extends Piece {
         }
     }
 
+    isThisEnPassant() {
+        return false;
+    }
+
     /*
         Dodaje ruchy po skosie związane z potencjalnym biciem
     */
     _possibleCaptureMoves(possiblePositions, boardState) {
         const boardState2D = boardState.toTwoDimensionArray();
-        let pieces = [boardState2D[this._position.x - 1][this._position.y + 1],
-                      boardState2D[this._position.x + 1][this._position.y + 1]];
+        console.log(boardState2D)
+        let pieces = [boardState2D[this._position.x - 1][this._position.y - 1],
+                      boardState2D[this._position.x - 1][this._position.y - 1]];
 
         for (let piece of pieces) {
             if (piece != undefined && piece._color != this._color) {
