@@ -13,10 +13,9 @@ class Pawn extends Piece {
         this._wasMoved = true;
     }
 
-    legalMoves(boardState) {
+    legalMoves(boardState, previousBoardState) {
         boardState = boardState.last();
         const possiblePositions = this._allPossiblePositions(boardState);
-
         const onBoardPositions = possiblePositions.filter(pos => !this._isOutOfTheBoard(pos));
 
         try {
@@ -31,11 +30,14 @@ class Pawn extends Piece {
         }
     }
 
+    isThisEnPassant() {
+        return false;
+    }
+
     /*
         Zwraca wszystkie możliwe ruchy pionka
     */
     _allPossiblePositions(boardState) {
-        console.log(boardState);
         const possiblePositions = [];
 
         this._forwardMoves(possiblePositions);
@@ -51,21 +53,19 @@ class Pawn extends Piece {
     _forwardMoves(possiblePositions) {
         const sign = this._colorSign();
 
-        possiblePositions.push({
-            x: this._position.x,
-            y: this._position.y + (1 * sign)
-        });
-
-        if (!this._wasMoved) {
+        if (!this._isBlockedFromForward()) {
             possiblePositions.push({
                 x: this._position.x,
-                y: this._position.y + (2 * sign)
+                y: this._position.y + (1 * sign)
             });
+    
+            if (!this._wasMoved) {
+                possiblePositions.push({
+                    x: this._position.x,
+                    y: this._position.y + (2 * sign)
+                });
+            }
         }
-    }
-
-    isThisEnPassant() {
-        return false;
     }
 
     /*
@@ -91,6 +91,14 @@ class Pawn extends Piece {
     */
     _colorSign() {
         return this._color == "white" ? 1 : -1;
+    }
+
+    /*
+        Sprawdza, czy pionek jest blokowany z przodu
+        co uniemożliwia mu ruch
+    */
+    _isBlockedFromForward(boardState) {
+        return false;
     }
 }
 
