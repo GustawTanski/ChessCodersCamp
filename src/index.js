@@ -1,10 +1,11 @@
-import App from "./App";
-import Rook from "./Game/gameLogic/pieces/Rook";
+// import App from "./App";
+// import BoardState from "./Game/gameLogic/history/BoardState"
 
 //w tym pliku inicjalizowana będzie aplikacja i prawdopobodnie nic więcej
 
-const app = new App();
-const rook = new Rook({x:0,y:0},'black');
+// const app = new App();
 
-rook.legalMoves();
+import Game from "./Game"
 
+const game = new Game();
+game.start();

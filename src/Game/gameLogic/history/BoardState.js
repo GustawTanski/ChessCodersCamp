@@ -47,7 +47,7 @@ class BoardState {
         let board = new Array();
 
         for (let flatPiece of boardState) {
-            board.push(this._createProperPiece(flatPiece)); 
+            board.push(this._createProperPiece(flatPiece));
         }
 
         return board;
@@ -95,7 +95,7 @@ class BoardState {
         const CurrentPiece = pieceTypes.find(type => type.name == flatPiece.name);
 
         if (!CurrentPiece) throw Error("Improper piece name");
-        
+
         return new CurrentPiece(flatPiece.position, flatPiece.color);
     }
 }
