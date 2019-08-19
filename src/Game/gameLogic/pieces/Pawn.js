@@ -40,7 +40,7 @@ class Pawn extends Piece {
     _allPossiblePositions(boardState) {
         const possiblePositions = [];
 
-        this._forwardMoves(possiblePositions);
+        this._forwardMoves(possiblePositions, boardState);
         this._possibleCaptureMoves(possiblePositions, boardState);
 
         return possiblePositions;
@@ -50,10 +50,10 @@ class Pawn extends Piece {
         Dodaje ruch o jedno pole w przód, lub o dwa jeśli
         pionek nie wykonywał wcześniej żadnych ruchów
     */
-    _forwardMoves(possiblePositions) {
+    _forwardMoves(possiblePositions, boardState) {
         const sign = this._colorSign();
 
-        if (!this._isBlockedFromForward()) {
+        if (!this._isBlockedFromForward(boardState)) {
             possiblePositions.push({
                 x: this._position.x,
                 y: this._position.y + (1 * sign)
@@ -98,7 +98,10 @@ class Pawn extends Piece {
         co uniemożliwia mu ruch
     */
     _isBlockedFromForward(boardState) {
-        return false;
+        let array2d = boardState.toTwoDimensionArray();
+        let piece = array2d[this._position.x][this._position.y + (1 * this._colorSign())];
+
+        return piece != undefined;
     }
 }
 
