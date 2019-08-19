@@ -14,8 +14,7 @@ class Pawn extends Piece {
     }
 
     legalMoves(boardState, previousBoardState) {
-        boardState = boardState.last();
-        const possiblePositions = this._allPossiblePositions(boardState);
+        const possiblePositions = this._possiblePositions(boardState);
         const onBoardPositions = possiblePositions.filter(pos => !this._isOutOfTheBoard(pos));
 
         try {
@@ -37,13 +36,13 @@ class Pawn extends Piece {
     /*
         Zwraca wszystkie możliwe ruchy pionka
     */
-    _allPossiblePositions(boardState) {
+    _possiblePositions(boardState) {
         const possiblePositions = [];
 
         this._forwardMoves(possiblePositions, boardState);
         this._possibleCaptureMoves(possiblePositions, boardState);
 
-        return possiblePositions;
+        return possiblePositions.filter(pos => pos !== undefined);
     }
 
     /*
@@ -79,10 +78,12 @@ class Pawn extends Piece {
         if (this._position.x > 0) {
             pieces.push(boardState2D[this._position.x - 1][this._position.y + (1 * sign)]);
         }
+
         if (this._position.x < 7) {
             pieces.push(boardState2D[this._position.x + 1][this._position.y + (1 * sign)]);
         }
 
+        console.log(pieces);
         for (let piece of pieces) {
             if (piece != undefined && piece._color != this._color) {
                 possiblePositions.push(piece._position);
