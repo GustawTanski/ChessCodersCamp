@@ -89,9 +89,12 @@ class Board {
 
     /* DO UZUPELNIENIA */
     isCheck() {
-        const kingPosition = this._findPiecePosition("King", "white")
-        const enemiesPossibleMoves = this._getAllEnemiesLegalMoves("black")
-        return enemiesPossibleMoves.some(move => move.x === kingPosition.x && move.y === kingPosition.y)
+        const colors = ["white", "black"]
+        const kingsPosition = colors.map(color => this._findPiecePosition("King", color))
+        const enemiesPossibleMoves = colors.map(color => this._getAllEnemiesLegalMoves(color))
+       return enemiesPossibleMoves[1].some(move => move.x === kingsPosition[0].x && move.y === kingsPosition[0].y)
+       || enemiesPossibleMoves[0].some(move => move.x === kingsPosition[1].x && move.y === kingsPosition[1].y)
+
     }
 
     isMate() {}
