@@ -24,9 +24,6 @@ class Board {
         this._color = color;
     }
 
-    getCapturedPieces(color) {
-        return this.pieces.filter(piece => piece.color === color && piece.isBeaten === true);
-    }
 
 
     legalMoves(coords) {
@@ -77,7 +74,7 @@ class Board {
         this.findPiece(fromCoords).move(toCoords);
         this.updateBoardHistory();
         this.isCheck();
-        return true;
+        return this.boardHistory.last();
     }
 
 
