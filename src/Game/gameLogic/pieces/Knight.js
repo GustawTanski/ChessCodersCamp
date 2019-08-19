@@ -15,6 +15,7 @@ class Knight extends Piece {
     //oraz pozycje na których stoją figury tego samego koloru co dany skoczek
     legalMoves(boardState) {
 
+        boardState = boardState.last();
         const possiblePositions = this._allPossiblePositions();
         const onBoardPositions = this._removeOutOfBoardPositions(possiblePositions);
         const legalPositions = this._removePositionsTakenByYourOwnPieces(onBoardPositions, boardState);
