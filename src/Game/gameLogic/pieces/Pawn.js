@@ -74,9 +74,14 @@ class Pawn extends Piece {
     _possibleCaptureMoves(possiblePositions, boardState) {
         const boardState2D = boardState.toTwoDimensionArray();
         const sign = this._colorSign();
+        const pieces = [];
 
-        let pieces = [boardState2D[this._position.x - 1][this._position.y + (1 * sign)],
-                      boardState2D[this._position.x + 1][this._position.y + (1 * sign)]];
+        if (this._position.x > 0) {
+            pieces.push(boardState2D[this._position.x - 1][this._position.y + (1 * sign)]);
+        }
+        if (this._position.x < 7) {
+            pieces.push(boardState2D[this._position.x + 1][this._position.y + (1 * sign)]);
+        }
 
         for (let piece of pieces) {
             if (piece != undefined && piece._color != this._color) {
@@ -98,8 +103,7 @@ class Pawn extends Piece {
         co uniemożliwia mu ruch
     */
     _isBlockedFromForward(boardState) {
-        let array2d = boardState.toTwoDimensionArray();
-        let piece = array2d[this._position.x][this._position.y + (1 * this._colorSign())];
+        let piece = boardState.toTwoDimensionArray()[this._position.x][this._position.y + (1 * this._colorSign())];
 
         return piece != undefined;
     }
