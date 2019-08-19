@@ -2,14 +2,25 @@ import Piece from "./Piece";
 // TODO:: bicie w przelocie (jak wymyślę jak to zrobić), promocja, inne ruchy zależne od ustawienia pionka
 
 class Pawn extends Piece {
-    constructor(position, color) {
+    constructor(position, color, pawnNumber) {
         super(position, color);
         this._wasMoved = false;
+        this._pawnNumber = pawnNumber;
+    }
+
+    get pawnNumber() {
+        return this._pawnNumber;
     }
 
     move(toCoords) {
-        const {x, y} = toCoords;
-        this._position = {x, y};
+        const {
+            x,
+            y
+        } = toCoords;
+        this._position = {
+            x,
+            y
+        };
         this._wasMoved = true;
     }
 
@@ -20,7 +31,7 @@ class Pawn extends Piece {
         try {
             const boardState2D = boardState.toTwoDimensionArray();
             const legalPositions = onBoardPositions.filter(pos =>
-                boardState2D[pos.x][pos.y] == undefined || 
+                boardState2D[pos.x][pos.y] == undefined ||
                 boardState2D[pos.x][pos.y].color != this._color);
 
             return legalPositions;
@@ -29,9 +40,36 @@ class Pawn extends Piece {
         }
     }
 
-    isThisEnPassant() {
+
+    isThisEnPassant(toCoords, boardState, previousBoardState) {
+        const enemyPawn = this._findEnemyPawn(boardState, toCoords);
+        if (enemyPawn instanceof Pawn && (this.position.y === 3 || this.position.y === 4)) {
+            const previousPositionOfEnemyPawn = this._findPreviousPositionOfEnemyPawn(previousBoardState, enemyPawn);
+            if (enemyPawn.color !== this.color && (previousPositionOfEnemyPawn.y === 1 || previousPositionOfEnemyPawn.y === 6)) {
+                return true;
+            }
+        }
         return false;
     }
+
+    _findEnemyPawn(boardState, coords) {
+        return boardState.toTwoDimensionArray().find(piece => piece.position.x === coords.x && piece.position.y === this.position.y);
+    }
+
+    _findPreviousPositionOfEnemyPawn(previousBoardState, enemyPawn) {
+        return previousBoardState.toTwoDimensionArray().find(piece => piece.pawnNumber === enemyPawn.pawnNumber && piece.color === enemyPawn.color).position;
+    }
+
+    getCoordsOfCapturedPawn(toCoords, boardState, previousBoardState) {
+        if (this.isThisEnPassant(toCoords, boardState, previousBoardState)) {
+            return {
+                x: toCoords.x,
+                y: this.position.y
+            };
+        }
+        return null;
+    }
+
 
     /*
         Zwraca wszystkie możliwe ruchy pionka
@@ -57,7 +95,7 @@ class Pawn extends Piece {
                 x: this._position.x,
                 y: this._position.y + (1 * sign)
             });
-    
+
             if (!this._wasMoved) {
                 const array2d = boardState.toTwoDimensionArray();
 
