@@ -59,10 +59,14 @@ class Pawn extends Piece {
             });
     
             if (!this._wasMoved) {
-                possiblePositions.push({
-                    x: this._position.x,
-                    y: this._position.y + (2 * sign)
-                });
+                const array2d = boardState.toTwoDimensionArray();
+
+                if (array2d[this._position.x][this._position.y + 2] === undefined) {
+                    possiblePositions.push({
+                        x: this._position.x,
+                        y: this._position.y + (2 * sign)
+                    });
+                }
             }
         }
     }
