@@ -14,18 +14,55 @@ class Rook extends Piece{
     }
 
     legalMoves(boardState){
-        console.log('legalMoves')
         const boardState2D = boardState.toTwoDimensionArray();
+        var possibleMoves = []
 
-        for (let possibleX = 0; possibleX < chessBoard.length; possibleX++) {
-            boardState2D[possibleX,this.position.y] = 'X'
+        // Tworzy możliwe ruchy bez uwzględnienia pozostalych pionków
+        for (let possibleX = this.position.x - 1; possibleX >= 0; possibleX--) {
+            if(!boardState2D[possibleX][this.position.y]){
+                possibleMoves.push({
+                    x: possibleX,
+                    y: this.position.y
+                })
+            } else {
+                break;
+            }
         }   
 
-        for (let possibleY = 0; possibleY < chessBoard.length; possibleY++) {
-            boardState2D[this.position.x,possibleY] = 'Y'
+        for (let possibleX = this.position.x + 1; possibleX < chessBoard.length; possibleX++) {
+            if(!boardState2D[possibleX][this.position.y]){
+                possibleMoves.push({
+                    x: possibleX,
+                    y: this.position.y
+                })
+            } else {
+                break;
+            }
         }   
 
-        console.log(boardState);
+        for (let possibleY = this.position.y -1; possibleY >= 0; possibleY--) {
+            if(!boardState2D[this.position.x][possibleY]){
+                possibleMoves.push({
+                    x: this.position.x,
+                    y: possibleY
+                })
+            } else {
+                break;
+            }
+        }
+
+        for (let possibleY = this.position.y + 1; possibleY < chessBoard.height; possibleY++) {
+            if(!boardState2D[this.position.x][possibleY]){
+                possibleMoves.push({
+                    x: this.position.x,
+                    y: possibleY
+                })
+            } else {
+                break;
+            }
+        }
+
+        return possibleMoves;
     }
 }
 
