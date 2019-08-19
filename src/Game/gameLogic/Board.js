@@ -69,9 +69,10 @@ class Board {
             this.capturePiece(toCoords);
         }
         this.findPiece(fromCoords).move(toCoords);
+        this.updateBoardHistory();
         this.isCheck();
         this.isMate();
-        this.updateBoardHistory();
+
         return true;
     }
 
@@ -87,9 +88,27 @@ class Board {
     }
 
     /* DO UZUPELNIENIA */
-    isCheck() {}
+    isCheck() {
+        const kingPosition = this._findPiecePosition("King", "white")
+        const enemiesPossibleMoves = this._getAllEnemiesLegalMoves("black")
+        return enemiesPossibleMoves.some(move => move.x === kingPosition.x && move.y === kingPosition.y)
+    }
 
     isMate() {}
+
+    _findPiecePosition(pieceType, color) {
+        return this.pieces
+            .find(piece => piece.color === color && piece.name === pieceType)
+            .position;
+    }
+
+    _getAllEnemiesLegalMoves(color) {
+        return this.pieces
+            .filter(piece => piece.color === color)
+            .map(piece => piece.position)
+            .flatMap(cords => this.legalMoves(cords))
+            .filter(cord => cord !== undefined) //nie powinno być undefined, ale na wszelki wypadek to sprawdzam
+    }
 
 
     updateBoardHistory() {
