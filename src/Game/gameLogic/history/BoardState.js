@@ -47,7 +47,7 @@ class BoardState {
         let board = new Array();
 
         for (let flatPiece of boardState) {
-            board.push(this._createProperPiece(flatPiece)); 
+            board.push(this._createProperPiece(flatPiece));
         }
 
         return board;
@@ -66,7 +66,7 @@ class BoardState {
         }
 
         for (let flatPiece of this._boardState) {
-            array2d[flatPiece.position[0]][flatPiece.position[1]] = this._createProperPiece(flatPiece);
+            array2d[flatPiece.position.x][flatPiece.position.y] = this._createProperPiece(flatPiece);
         }
 
         return array2d;
@@ -79,7 +79,7 @@ class BoardState {
     _emptyArrayHelper(size) {
         const emptyArray = [];
 
-        for (let i = 0; i < size ; i++){
+        for (let i = 0; i < size; ++i){
             emptyArray.push(undefined);
         }
 
@@ -95,7 +95,7 @@ class BoardState {
         const CurrentPiece = pieceTypes.find(type => type.name == flatPiece.name);
 
         if (!CurrentPiece) throw Error("Improper piece name");
-        
+
         return new CurrentPiece(flatPiece.position, flatPiece.color);
     }
 }
