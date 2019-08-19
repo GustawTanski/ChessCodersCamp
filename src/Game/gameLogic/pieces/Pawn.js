@@ -83,7 +83,6 @@ class Pawn extends Piece {
             pieces.push(boardState2D[this._position.x + 1][this._position.y + (1 * sign)]);
         }
 
-        console.log(pieces);
         for (let piece of pieces) {
             if (piece != undefined && piece._color != this._color) {
                 possiblePositions.push(piece._position);
