@@ -1,3 +1,13 @@
+import BoardState from './history/BoardState';
+import BoardHistory from './history/BoardHistory';
+import Piece from './pieces/Piece';
+import Pawn from './pieces/Pawn';
+import Rook from './pieces/Rook';
+import Knight from './pieces/Knight';
+import Bishop from './pieces/Bishop';
+import Queen from './pieces/Queen';
+import King from './pieces/King';
+
 class Board {
     constructor() {
         this.pieces = new Array();
@@ -8,13 +18,25 @@ class Board {
     }
 
 
+    getCapturedPieces(color) {
+        return this.pieces.filter(piece => piece.color === color && piece.isBeaten === true);
+    }
+
+
     legalMoves(coords) {
-        return this.findPiece(coords).legalMoves(this.boardHistory);
+        const chosenPiece = this.findPiece(coords);
+        if (chosenPiece instanceof Pawn) {
+            const previousBoardState = this.boardHistory[this.boardHistory.length - 2];
+            return chosenPiece.legalMoves(this.boardHistory.last(), previousBoardState);
+        }
+        return chosenPiece.legalMoves(this.boardHistory.last());
     }
 
     findPiece(coords) {
         return this.pieces.find(piece => piece.position.x === coords.x && piece.position.y === coords.y);
     }
+
+
 
 
     /* 
@@ -31,15 +53,16 @@ class Board {
         if (this.isEmpty(toCoords)) {
             const chosenPiece = this.findPiece(fromCoords);
             if (chosenPiece instanceof Pawn) {
-                if (chosenPiece.isThisEnPassant(fromCoords, toCoords, this.boardHistory)) {
-                    const coordsOfCapturedPawn = chosenPiece.getCoordsOfCapturedPawn(fromCoords, toCoords, this.boardHistory);
+                if (chosenPiece.isThisEnPassant(toCoords, this.boardHistory.last())) {
+                    const coordsOfCapturedPawn = chosenPiece.getCoordsOfCapturedPawn(toCoords, this.boardHistory.last());
                     this.capturePiece(coordsOfCapturedPawn);
                 }
             }
             if (chosenPiece instanceof King) {
-                if (chosenPiece.isThisCastling(fromCoords, toCoords, this.boardHistory)) {
-                    const coordsOfTheRook = chosenPiece.getCoordsOfTheRookInCastling(fromCoords, toCoords, this.boardHistory);
-                    this.findPiece(coordsOfTheRook.fromCoords).move(coordsOfTheRook.toCoords);
+                if (chosenPiece.isThisCastling(toCoords, this.boardHistory.last())) {
+                    const coordsOfTheRookInCastling = chosenPiece.getCoordsOfTheRookInCastling(toCoords);
+                    const coordsOfTheRookAfterCastling = chosenPiece.getCoordsOfTheRookAfterCastling();
+                    this.findPiece(coordsOfTheRookInCastling).move(coordsOfTheRookAfterCastling);
                 }
             }
         } else {
@@ -165,3 +188,5 @@ class Board {
         }
     }
 }
+
+export default Board;
