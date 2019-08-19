@@ -12,11 +12,17 @@ class Board {
     constructor() {
         this.pieces = new Array();
         this.createPieces();
+        this.capturedPieces = new Array();
         this.boardHistory = new BoardHistory();
         this.check = false;
         this.mate = false;
+        this._color = "white";
     }
 
+
+    set color(color) {
+        this._color = color;
+    }
 
     getCapturedPieces(color) {
         return this.pieces.filter(piece => piece.color === color && piece.isBeaten === true);
@@ -53,7 +59,7 @@ class Board {
         if (this.isEmpty(toCoords)) {
             const chosenPiece = this.findPiece(fromCoords);
             if (chosenPiece instanceof Pawn) {
-                if (chosenPiece.isThisEnPassant(toCoords, this.boardHistory.last())) {
+                if (chosenPiece.isThisEnPassant(toCoords, this.boardHistory.last(), this.boardHistory[this.boardHistory.length - 2])) {
                     const coordsOfCapturedPawn = chosenPiece.getCoordsOfCapturedPawn(toCoords, this.boardHistory.last());
                     this.capturePiece(coordsOfCapturedPawn);
                 }
@@ -69,11 +75,11 @@ class Board {
             this.capturePiece(toCoords);
         }
         this.findPiece(fromCoords).move(toCoords);
-        this.isCheck();
-        this.isMate();
         this.updateBoardHistory();
+        this.isCheck();
         return true;
     }
+
 
     isEmpty(coords) {
         if (this.findPiece(coords)) {
@@ -83,7 +89,8 @@ class Board {
     }
 
     capturePiece(coords) {
-        this.findPiece(coords).pieceLoss();
+        const index = this.pieces.findIndex(piece => piece.coords.x === x && piece.coords.y === y);
+        this.capturedPieces.push(this.pieces.splice(index, 1));
     }
 
     /* DO UZUPELNIENIA */
@@ -174,7 +181,7 @@ class Board {
         };
         switch (type) {
             case 'Pawn':
-                return new Pawn(coords, color);
+                return new Pawn(coords, color, x);
             case 'Rook':
                 return new Rook(coords, color);
             case 'Knight':
