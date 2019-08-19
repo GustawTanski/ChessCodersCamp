@@ -49,16 +49,18 @@ class Pawn extends Piece {
         pionek nie wykonywał wcześniej żadnych ruchów
     */
     _forwardMoves(possiblePositions) {
+        const sign = this._colorSign();
+
         possiblePositions.push({
             x: this._position.x,
-            y: this._position.y + 1
+            y: this._position.y + (1 * sign)
         });
 
         if (!this._wasMoved) {
             possiblePositions.push({
                 x: this._position.x,
-                y: this._position.y + 2
-            })
+                y: this._position.y + (2 * sign)
+            });
         }
     }
 
@@ -71,15 +73,24 @@ class Pawn extends Piece {
     */
     _possibleCaptureMoves(possiblePositions, boardState) {
         const boardState2D = boardState.toTwoDimensionArray();
-        console.log(boardState2D)
-        let pieces = [boardState2D[this._position.x - 1][this._position.y - 1],
-                      boardState2D[this._position.x - 1][this._position.y - 1]];
+        const sign = this._colorSign();
+
+        let pieces = [boardState2D[this._position.x - 1][this._position.y + (1 * sign)],
+                      boardState2D[this._position.x + 1][this._position.y + (1 * sign)]];
 
         for (let piece of pieces) {
             if (piece != undefined && piece._color != this._color) {
                 possiblePositions.push(piece._position);
             }
         }
+    }
+
+    /*
+        Zwraca poprawną liczbę do poruszania pionka po osi y, 
+        dodatnią dla pionków białych, ujemną dla czarnych
+    */
+    _colorSign() {
+        return this._color == "white" ? 1 : -1;
     }
 }
 
