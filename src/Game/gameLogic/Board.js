@@ -95,10 +95,13 @@ class Board {
         // return enemiesLegalMoves.some(cord => cord === king.position);
         // console.log(this.getAllEnemiesLegalMoves("black"))
         // console.log(this.pieces[0])
-        const whiteKingPosition = this._findPiecePosition("King","white")
-        const blackEnemiesPossibleMoves = this._getAllEnemiesLegalMoves("black")
-        const blackKingPosition = this._findPiecePosition("King","black")
-        const whiteEnemiesPossibleMoves = this._getAllEnemiesLegalMoves("white")
+        const colors = ["white", "black"]
+        const kingsPosition = colors.map(color => this._findPiecePosition("King", color))
+        const enemiesPossibleMoves = colors.map(color => this._getAllEnemiesLegalMoves(color))
+        // const whiteKingPosition = this._findPiecePosition("King","white")
+        // const blackEnemiesPossibleMoves = this._getAllEnemiesLegalMoves("black")
+        // const blackKingPosition = this._findPiecePosition("King","black")
+        // const whiteEnemiesPossibleMoves = this._getAllEnemiesLegalMoves("white")
         const queenPosition = this._findPiecePosition("Queen","black")
         
         // console.log(whiteKingPosition)
@@ -106,10 +109,10 @@ class Board {
         // // console.log(this.legalMoves(queenPosition))
         // console.log(blackEnemiesPossibleMoves)
         // console.log(enemiesPossibleMoves.includes(kingPosition))
-        console.log(blackEnemiesPossibleMoves.some(move => move.x === whiteKingPosition.x && move.y === whiteKingPosition.y)
-        || whiteEnemiesPossibleMoves.some(move => move.x === blackKingPosition.x && move.y === blackKingPosition.y))
-       return blackEnemiesPossibleMoves.some(move => move.x === whiteKingPosition.x && move.y === whiteKingPosition.y)
-       || whiteEnemiesPossibleMoves.some(move => move.x === blackKingPosition.x && move.y === blackKingPosition.y)
+        console.log(enemiesPossibleMoves[1].some(move => move.x === kingsPosition[0].x && move.y === kingsPosition[0].y)
+        || enemiesPossibleMoves[0].some(move => move.x === kingsPosition[1].x && move.y === kingsPosition[1].y))
+       return enemiesPossibleMoves[1].some(move => move.x === kingsPosition[0].x && move.y === kingsPosition[0].y)
+       || enemiesPossibleMoves[0].some(move => move.x === kingsPosition[1].x && move.y === kingsPosition[1].y)
         // return enemiesPossibleMoves.includes(kingPosition)
     }
 
