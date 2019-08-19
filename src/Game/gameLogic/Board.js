@@ -95,16 +95,21 @@ class Board {
         // return enemiesLegalMoves.some(cord => cord === king.position);
         // console.log(this.getAllEnemiesLegalMoves("black"))
         // console.log(this.pieces[0])
-        const kingPosition = this._findPiecePosition("King","white")
+        const whiteKingPosition = this._findPiecePosition("King","white")
+        const blackEnemiesPossibleMoves = this._getAllEnemiesLegalMoves("black")
+        const blackKingPosition = this._findPiecePosition("King","black")
+        const whiteEnemiesPossibleMoves = this._getAllEnemiesLegalMoves("white")
         const queenPosition = this._findPiecePosition("Queen","black")
-        const enemiesPossibleMoves = this._getAllEnemiesLegalMoves("black")
-        console.log(kingPosition)
-        console.log(queenPosition)
-        // console.log(this.legalMoves(queenPosition))
-        console.log(enemiesPossibleMoves)
+        
+        // console.log(whiteKingPosition)
+        // console.log(queenPosition)
+        // // console.log(this.legalMoves(queenPosition))
+        // console.log(blackEnemiesPossibleMoves)
         // console.log(enemiesPossibleMoves.includes(kingPosition))
-        console.log(enemiesPossibleMoves.some(move => move.x === kingPosition.x && move.y === kingPosition.y))
-       return enemiesPossibleMoves.some(move => move.x === kingPosition.x && move.y === kingPosition.y)
+        console.log(blackEnemiesPossibleMoves.some(move => move.x === whiteKingPosition.x && move.y === whiteKingPosition.y)
+        || whiteEnemiesPossibleMoves.some(move => move.x === blackKingPosition.x && move.y === blackKingPosition.y))
+       return blackEnemiesPossibleMoves.some(move => move.x === whiteKingPosition.x && move.y === whiteKingPosition.y)
+       || whiteEnemiesPossibleMoves.some(move => move.x === blackKingPosition.x && move.y === blackKingPosition.y)
         // return enemiesPossibleMoves.includes(kingPosition)
     }
 
@@ -123,7 +128,7 @@ class Board {
             .flatMap(cords => this.legalMoves(cords))
             .filter(cord => cord!==undefined) //nie powinno być undefined, ale na wszelki wypadek to sprawdzam
             
-        // return this.legalMoves(this._findPiecePosition("Queen",color))
+        
             
     }
 
