@@ -13,10 +13,8 @@ class Pawn extends Piece {
         this._wasMoved = true;
     }
 
-    legalMoves(boardState) {
-        boardState = boardState.last();
-        const possiblePositions = this._allPossiblePositions(boardState);
-
+    legalMoves(boardState, previousBoardState) {
+        const possiblePositions = this._possiblePositions(boardState);
         const onBoardPositions = possiblePositions.filter(pos => !this._isOutOfTheBoard(pos));
 
         try {
@@ -31,41 +29,42 @@ class Pawn extends Piece {
         }
     }
 
+    isThisEnPassant() {
+        return false;
+    }
+
     /*
         Zwraca wszystkie możliwe ruchy pionka
     */
-    _allPossiblePositions(boardState) {
-        console.log(boardState);
+    _possiblePositions(boardState) {
         const possiblePositions = [];
 
-        this._forwardMoves(possiblePositions);
+        this._forwardMoves(possiblePositions, boardState);
         this._possibleCaptureMoves(possiblePositions, boardState);
 
-        return possiblePositions;
+        return possiblePositions.filter(pos => pos !== undefined);
     }
 
     /*
         Dodaje ruch o jedno pole w przód, lub o dwa jeśli
         pionek nie wykonywał wcześniej żadnych ruchów
     */
-    _forwardMoves(possiblePositions) {
+    _forwardMoves(possiblePositions, boardState) {
         const sign = this._colorSign();
 
-        possiblePositions.push({
-            x: this._position.x,
-            y: this._position.y + (1 * sign)
-        });
-
-        if (!this._wasMoved) {
+        if (!this._isBlockedFromForward(boardState)) {
             possiblePositions.push({
                 x: this._position.x,
-                y: this._position.y + (2 * sign)
+                y: this._position.y + (1 * sign)
             });
+    
+            if (!this._wasMoved) {
+                possiblePositions.push({
+                    x: this._position.x,
+                    y: this._position.y + (2 * sign)
+                });
+            }
         }
-    }
-
-    isThisEnPassant() {
-        return false;
     }
 
     /*
@@ -74,10 +73,17 @@ class Pawn extends Piece {
     _possibleCaptureMoves(possiblePositions, boardState) {
         const boardState2D = boardState.toTwoDimensionArray();
         const sign = this._colorSign();
+        const pieces = [];
 
-        let pieces = [boardState2D[this._position.x - 1][this._position.y + (1 * sign)],
-                      boardState2D[this._position.x + 1][this._position.y + (1 * sign)]];
+        if (this._position.x > 0) {
+            pieces.push(boardState2D[this._position.x - 1][this._position.y + (1 * sign)]);
+        }
 
+        if (this._position.x < 7) {
+            pieces.push(boardState2D[this._position.x + 1][this._position.y + (1 * sign)]);
+        }
+
+        console.log(pieces);
         for (let piece of pieces) {
             if (piece != undefined && piece._color != this._color) {
                 possiblePositions.push(piece._position);
@@ -91,6 +97,16 @@ class Pawn extends Piece {
     */
     _colorSign() {
         return this._color == "white" ? 1 : -1;
+    }
+
+    /*
+        Sprawdza, czy pionek jest blokowany z przodu
+        co uniemożliwia mu ruch
+    */
+    _isBlockedFromForward(boardState) {
+        let piece = boardState.toTwoDimensionArray()[this._position.x][this._position.y + (1 * this._colorSign())];
+
+        return piece != undefined;
     }
 }
 
