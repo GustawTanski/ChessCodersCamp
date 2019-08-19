@@ -70,9 +70,10 @@ class Board {
             this.capturePiece(toCoords);
         }
         this.findPiece(fromCoords).move(toCoords);
+        this.updateBoardHistory();
         this.isCheck();
         this.isMate();
-        this.updateBoardHistory();
+       
         return this.boardHistory.last();
     }
 
@@ -88,9 +89,43 @@ class Board {
     }
 
     /* DO UZUPELNIENIA */
-    isCheck() {}
+    isCheck() {
+        // const king = this.findKing('white');
+        // const enemiesLegalMoves = this.getAllEnemiesLegalMoves('black');
+        // return enemiesLegalMoves.some(cord => cord === king.position);
+        // console.log(this.getAllEnemiesLegalMoves("black"))
+        // console.log(this.pieces[0])
+        const kingPosition = this._findPiecePosition("King","white")
+        const queenPosition = this._findPiecePosition("Queen","black")
+        const enemiesPossibleMoves = this._getAllEnemiesLegalMoves("black")
+        console.log(kingPosition)
+        console.log(queenPosition)
+        // console.log(this.legalMoves(queenPosition))
+        console.log(enemiesPossibleMoves)
+        // console.log(enemiesPossibleMoves.includes(kingPosition))
+        console.log(enemiesPossibleMoves.some(move => move.x === kingPosition.x && move.y === kingPosition.y))
+       return enemiesPossibleMoves.some(move => move.x === kingPosition.x && move.y === kingPosition.y)
+        // return enemiesPossibleMoves.includes(kingPosition)
+    }
 
     isMate() {}
+
+    _findPiecePosition(pieceType, color) {
+        return this.pieces
+            .find(piece => piece.color === color && piece.name === pieceType)
+            .position;
+    }
+
+    _getAllEnemiesLegalMoves(color) {
+        return this.pieces
+            .filter(piece => piece.color === color)
+            .map(piece => piece.position)
+            .flatMap(cords => this.legalMoves(cords))
+            .filter(cord => cord!==undefined) //nie powinno być undefined, ale na wszelki wypadek to sprawdzam
+            
+        // return this.legalMoves(this._findPiecePosition("Queen",color))
+            
+    }
 
 
     updateBoardHistory() {
