@@ -41,7 +41,6 @@ class Game {
 			this._activePiece.position,
 			coords
 		);
-		console.log(newBoardState);
 		this._interface.setPosition(newBoardState);
 		this._nextMove();
 	}
@@ -53,7 +52,6 @@ class Game {
 		this._activePiece = piece;
 		// sprawdza możliwe ruchy
 		this._currentLegalMoves = this._board.legalMoves(coords);
-		console.log(this._currentLegalMoves);
 		// podświetla dozwolone ruchy
 		this._interface.highlightFields(this._currentLegalMoves);
 	}
@@ -87,7 +85,6 @@ class Game {
 
 	_startNewGame() {
 		this._currentPlayer = "white";
-		console.log(this._board.boardHistory[0]);
 		this._interface.setPosition(this._board.boardHistory[0]);
 		// rysuje plansze
 		// this.mount();
