@@ -42,6 +42,14 @@ export default class InterfaceBoard{
     }
 
     /**
+     * Switches between white- and black-side player's perspective of the board
+     */
+    switchPerspective(){
+        this._node.classList.toggle("orientation--white");
+        this._node.classList.toggle("orientation--black");
+    }
+
+    /**
      * Substitutes existing position with the new one
      * @param {BoardState} boardState 
      * @param {boolean} fullReset specifies whether pieces unchanged between positions should be removed prior to setting the new position
