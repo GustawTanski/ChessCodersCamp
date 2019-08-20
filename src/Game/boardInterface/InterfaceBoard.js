@@ -155,7 +155,6 @@ export default class InterfaceBoard{
     _positionFromBoardstate(boardState){
         let boardstatePosition = boardState.boardState;
         let position = this._emptyPositionArray();
-        console.log(boardstatePosition, position);
         for (let i = 0; i < boardstatePosition.length; i++) {
             let x = boardstatePosition[i].position.x;
             let y = boardstatePosition[i].position.y;
