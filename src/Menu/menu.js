@@ -40,8 +40,8 @@ class View {
         this.opponentText.textContent = 'Opponent';
 
         this.opponentGroup = this.createElement('radiogroup', 'opponentGroup');
-        [this.computerOpponent, this.computerOpponentLabel] = this.createRadioButtonWithLabel('opponent', true, 'Computer', 'computerOpponent');
-        [this.humanOpponent, this.humanOpponentLabel] = this.createRadioButtonWithLabel('opponent', false, 'Human', 'humanOpponent');
+        [this.computerOpponent, this.computerOpponentLabel] = this.createRadioButtonWithLabel('computer', 'opponent', true, 'Computer', 'computerOpponent');
+        [this.humanOpponent, this.humanOpponentLabel] = this.createRadioButtonWithLabel('human', 'opponent', false, 'Human', 'humanOpponent');
         this.opponentGroup.append(this.computerOpponent, this.computerOpponentLabel, this.humanOpponent, this.humanOpponentLabel);
 
         // Wybór koloru
@@ -49,8 +49,8 @@ class View {
         this.colorText.textContent = 'Your color';
 
         this.colorGroup = this.createElement('radiogroup', 'colorGroup');
-        [this.whiteColor, this.whiteColorLabel] = this.createRadioButtonWithLabel('color', true, 'White', 'whiteColor');
-        [this.blackColor, this.blackColorLabel] = this.createRadioButtonWithLabel('color', false, 'Black', 'blackColor');
+        [this.whiteColor, this.whiteColorLabel] = this.createRadioButtonWithLabel('white', 'color', true, 'White', 'whiteColor');
+        [this.blackColor, this.blackColorLabel] = this.createRadioButtonWithLabel('black', 'color', false, 'Black', 'blackColor');
         this.colorGroup.append(this.whiteColor, this.whiteColorLabel, this.blackColor, this.blackColorLabel);
 
         // Przycisk rozpoczęcia gry
@@ -74,9 +74,10 @@ class View {
     }
 
     //metoda tworząca radio button z etykietą
-    createRadioButtonWithLabel(name, checked, label, idName, className) {
+    createRadioButtonWithLabel(value, name, checked, label, idName, className) {
         const radioButton = this.createElement('input', idName, className);
         radioButton.type = 'radio';
+        radioButton.value = value;
         radioButton.name = name;
         radioButton.checked = checked;
         const radioButtonLabel = this.createElement('label');
@@ -160,8 +161,13 @@ class Controller {
     // dla wyboru komputera-przeciwnika
     // wybór koloru zostaje wyświetlony
     handleComputerOpponentClicked = () => {
+        
         this.model.opponent = 'computer';
-        this.model.color = 'white';
+        Array.from(this.view.getElement('#colorGroup').children).forEach(child => {
+            if (child.type == 'radio' && child.checked == true) {
+                this.model.color = child.value;
+            }
+        })
         this.view.showColorChoice();
     }
 
