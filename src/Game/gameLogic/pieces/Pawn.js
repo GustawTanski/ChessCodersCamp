@@ -8,8 +8,8 @@ class Pawn extends Piece {
     }
 
     move(toCoords) {
-        const {x, y} = toCoords;
-        this._position = {x, y};
+        const { x, y } = toCoords;
+        this._position = { x, y };
         this._wasMoved = true;
     }
 
@@ -20,7 +20,7 @@ class Pawn extends Piece {
         try {
             const boardState2D = boardState.toTwoDimensionArray();
             const legalPositions = onBoardPositions.filter(pos =>
-                boardState2D[pos.x][pos.y] == undefined || 
+                boardState2D[pos.x][pos.y] == undefined ||
                 boardState2D[pos.x][pos.y].color != this._color);
 
             return legalPositions;
@@ -42,7 +42,7 @@ class Pawn extends Piece {
         this._forwardMoves(possiblePositions, boardState);
         this._possibleCaptureMoves(possiblePositions, boardState);
 
-        return possiblePositions.filter(pos => pos !== undefined);
+        return possiblePositions;
     }
 
     /*
@@ -57,12 +57,16 @@ class Pawn extends Piece {
                 x: this._position.x,
                 y: this._position.y + (1 * sign)
             });
-    
+
             if (!this._wasMoved) {
-                possiblePositions.push({
-                    x: this._position.x,
-                    y: this._position.y + (2 * sign)
-                });
+                const array2d = boardState.toTwoDimensionArray();
+
+                if (array2d[this._position.x][this._position.y + 2] === undefined) {
+                    possiblePositions.push({
+                        x: this._position.x,
+                        y: this._position.y + (2 * sign)
+                    });
+                }
             }
         }
     }
@@ -84,8 +88,8 @@ class Pawn extends Piece {
         }
 
         for (let piece of pieces) {
-            if (piece != undefined && piece._color != this._color) {
-                possiblePositions.push(piece._position);
+            if (piece != undefined && piece.color != this._color) {
+                possiblePositions.push(piece.position);
             }
         }
     }

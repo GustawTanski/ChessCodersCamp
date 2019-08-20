@@ -15,33 +15,39 @@ class Bishop extends Piece {
 
         //wszystkie możliwe ruchy Gońca
         const possiblePositions = this._allPossiblePositions();
-        possiblePositions.push(this._allDiagonalPositions());
+
+
+
 
         //figura nie może znajdować się poza szchownicą
         const onBoardPositions = possiblePositions.filter(pos => {
             return !this._isOutOfTheBoard(pos);
         });
 
-        //tablica dwuwymiarowa
-        const boardState2D = boardState.toTwoDimensionArray();
 
         //eliminacja pozycji gdzie stoją figury tego samego koloru
-        const legalPositions = onBoardPositions.filter(pos => {
-            if (boardState2D[pos.x][pos.y].color != this._color) {
-                return true;
-            }
-        });
+        //tablica dwuwymiarowa
+        try {
+            const boardState2D = boardState.toTwoDimensionArray();
+            const legalPositions = onBoardPositions.filter(pos =>
+                boardState2D[pos.x][pos.y] == undefined ||
+                boardState2D[pos.x][pos.y].color != this._color);
 
-        return legalPositions;
+            return legalPositions;
+        } catch (TypeError) {
+            return onBoardPositions;
+        }
+
     }
 
-    _allDiagonalPositions() {
+
+    _allPossiblePositions() {
         const arrDiagonal = [];
-        arrDiagonal.push(this._addUpRight);
-        arrDiagonal.push(this._addUpLeft);
-        arrDiagonal.push(this._addDownRight);
-        arrDiagonal.push(this._addDownLeft);
-        return arrDiagonal;
+        arrDiagonal.push(this._addUpRight());
+        arrDiagonal.push(this._addUpLeft());
+        arrDiagonal.push(this._addDownRight());
+        arrDiagonal.push(this._addDownLeft());
+        return arrDiagonal.flat();
     }
 
 

@@ -1,6 +1,9 @@
 // import App from "./App";
 // import BoardState from "./Game/gameLogic/history/BoardState"
 
+import Bishop from "./Game/gameLogic/pieces/Bishop"
+import BoardState from "./Game/gameLogic/history/BoardState"
+
 //w tym pliku inicjalizowana będzie aplikacja i prawdopobodnie nic więcej
 
 // const app = new App();

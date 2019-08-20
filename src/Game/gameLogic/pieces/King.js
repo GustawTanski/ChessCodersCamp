@@ -5,6 +5,7 @@ class King extends Piece {
         super(position, color);
         this.isMoved = false;
         this.rookDirectionInCastling = null;
+        this.wasChecked = false;
     }
 
     move(toCoords) {
@@ -16,9 +17,13 @@ class King extends Piece {
     }
     // sprawdza czy roszada jest dozwolona
     isThisCastling(toCoords, boardState) {
-        if (!this.isMoved && this.checkCastling(toCoords, boardState) && this._position == x - 2 || this._position == x + 2) {
+        const { x, y } = toCoords
+        if (!this.isMoved && this.checkCastling(toCoords, boardState)) {
+            console.log("CASTLING", true)
             return true;
         }
+        console.log("CASTLING", false)
+
         return false;
     }
 
@@ -29,11 +34,11 @@ class King extends Piece {
         let i = this._position.x;
         if (this._position.x > x) {
             for (i; i >= 1; i--) {
-                if (boardState2D[i][y] !== undefined) return false
+                if (boardState2D[i][y] !== undefined && boardState2D[i][y].name != this._name) return false
             }
         } else {
             for (i; i <= 6; i++) {
-                if (boardState2D[i][y] !== undefined) return false
+                if (boardState2D[i][y] !== undefined && boardState2D[i][y].name != this._name) return false
             }
         }
         return true;
@@ -48,50 +53,62 @@ class King extends Piece {
     // zwraca coordy wieży która bierze udział w roszadzie
     getCoordsOfTheRookInCastling(toCoords) {
         const { x, y } = toCoords;
-        if (this._position == x - 2) {
+        if (this._position.x == x - 2) {
             this.rookDirectionInCastling = "left";
+            console.log(this.rookDirectionInCastling)
             return { x: 7, y }
         }
-        else if (this._position == x + 2) {
+        else if (this._position.x == x + 2) {
             this.rookDirectionInCastling = "right";
             return { x: 0, y }
         }
+        return { x: 0, y }
     }
 
-    legalMoves(boardState) {
+    legalMoves(boardState, pieces) {
         const possiblePositions = this._allPossiblePositions();
-        const boardState2D = boardState.toTwoDimensionArray();
         const onBoardPositions = possiblePositions.filter(pos => {
             return !this._isOutOfTheBoard(pos);
         });
-        const yourPossiblePiecePositions = onBoardPositions.filter(pos => {
-            const pieceOnBoard = boardState2D[pos.x][pos.y];
-            return pieceOnBoard.color != this._color;
-        });
-        // wyszukuje wszystkie mozliwe ruchy pionków przeciwnika
-        const opponentPieceMoves = this.checkOpponentMoves(boardState, boardState2D);
-        // zwraca tablice mozliwych ruchow uwzgledniajac mozliwe ruchy przeciwnika
-        const legalPositions = this.checkLegalPosition(yourPossiblePiecePositions, opponentPieceMoves);
-        //zwraca legalne pozycje - tablicę elementów Coords
-        return legalPositions;
+        const boardState2D = boardState.toTwoDimensionArray();
+        const yourPossiblePiecePositions = onBoardPositions.filter(pos =>
+            boardState2D[pos.x][pos.y] == undefined ||
+            boardState2D[pos.x][pos.y].color != this._color
+        );
+        try {
+            const opponentPieceMoves = this.checkOpponentMoves(boardState, pieces);
+            const legalPositions = this.checkLegalPosition(yourPossiblePiecePositions, opponentPieceMoves);
+            return legalPositions;
+        } catch (TypeError) {
+            console.log(TypeError)
+            return yourPossiblePiecePositions
+        }
     }
 
-    checkOpponentMoves(boardState, boardState2D) {
-        const arrayOfOpponentPositions = [];
-        boardState2D.map((posX, posXValue, boardState2D) => {
-            for (const posY in posX) {
-                if (boardState2D[posXValue][posY] !== undefined) {
-                    arrayOfOpponentPositions.push(boardState2D[posXValue][posY].legalMoves(boardState));
+    checkOpponentMoves(boardState, pieces) {
+        let removeYourPieces = pieces.filter(piece => {
+            if (piece._color != this._color) {
+                return piece;
+            }
+        })
+        let opponentPieceMoves = removeYourPieces.map(piece => {
+            if (piece._name == "King") {
+                if (!this.wasChecked) {
+                    this.wasChecked = true;
+                    return piece.legalMoves(boardState, pieces)
+                } else {
+                    return;
                 }
             }
-        });
-        return arrayOfOpponentPositions;
+            else return piece.legalMoves(boardState)
+        })
+        this.wasChecked = false;
+        return opponentPieceMoves;
     }
 
     checkLegalPosition(yourPossiblePiecePositions, opponentPieceMoves) {
         const opponentLegalMoves = opponentPieceMoves.flat();
         const legalMoves = yourPossiblePiecePositions;
-
         const showTheSamePositions = legalMoves.map(el => {
             for (const opponentMove of opponentLegalMoves) {
                 if (el.x === opponentMove.x && el.y === opponentMove.y) {
@@ -120,6 +137,17 @@ class King extends Piece {
                     );
                 }
             }
+        }
+        if (!this.isMoved) {
+            possiblePositions.push({
+                x: this._position.x + 2,
+                y: this._position.y
+            },
+                {
+                    x: this._position.x - 2,
+                    y: this._position.y
+                }
+            )
         }
         return possiblePositions;
     }

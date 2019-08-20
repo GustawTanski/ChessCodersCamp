@@ -16,6 +16,7 @@ class Board {
         this.updateBoardHistory();
         this.check = false;
         this.mate = false;
+        this.capturedPieces = new Array();
     }
 
 
@@ -29,6 +30,8 @@ class Board {
         if (chosenPiece instanceof Pawn) {
             const previousBoardState = this.boardHistory[this.boardHistory.length - 2];
             return chosenPiece.legalMoves(this.boardHistory.last(), previousBoardState);
+        } else if (chosenPiece instanceof King) {
+            return chosenPiece.legalMoves(this.boardHistory.last(), this.pieces)
         }
         return chosenPiece.legalMoves(this.boardHistory.last());
     }
@@ -84,13 +87,15 @@ class Board {
     }
 
     capturePiece(coords) {
-        this.findPiece(coords).pieceLoss();
+        const { x, y } = coords;
+        const index = this.pieces.findIndex(piece => piece._position.x === x && piece._position.y === y);
+        this.capturedPieces.push(this.pieces.splice(index, 1));
     }
 
     /* DO UZUPELNIENIA */
-    isCheck() {}
+    isCheck() { }
 
-    isMate() {}
+    isMate() { }
 
 
     updateBoardHistory() {
