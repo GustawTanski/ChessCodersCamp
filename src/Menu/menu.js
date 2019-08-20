@@ -141,13 +141,13 @@ class Controller {
         this.model = model;
         this.view = view;
 
-        this.view.bindComputerOpponentClicked(this.handleComputerOpponentClicked());
-        this.view.bindHumanOpponentClicked(this.handleHumanOpponentClicked());
+        this.view.bindComputerOpponentClicked(this.handleComputerOpponentClicked);
+        this.view.bindHumanOpponentClicked(this.handleHumanOpponentClicked);
     }
 
     // dla wyboru człowieka-przeciwnika kolor jest ustawiony na undefined
     // wybór koloru znika
-    handleHumanOpponentClicked() {
+    handleHumanOpponentClicked = () => {
         this.model.opponent = 'human';
         this.model.color = undefined;
         this.view.hideColorChoice();
@@ -155,7 +155,7 @@ class Controller {
 
     // dla wyboru komputera-przeciwnika
     // wybór koloru zostaje wyświetlony
-    handleComputerOpponentClicked() {
+    handleComputerOpponentClicked = () => {
         this.model.opponent = 'computer';
         this.view.showColorChoice();
     }
