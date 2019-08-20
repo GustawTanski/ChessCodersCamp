@@ -133,6 +133,23 @@ class View {
         })
     }
 
+    bindWhiteColorClicked(handler) {
+        this.whiteColor.addEventListener('click', event => {
+            handler();
+        })
+    }
+
+    bindBlackColorClicked(handler) {
+        this.blackColor.addEventListener('click', event => {
+            handler();
+        })
+    }
+
+    bindPlayClicked(handler) {
+        this.play.addEventListener('click', event => {
+            handler();
+        })
+    }
 
 }
 
@@ -143,6 +160,9 @@ class Controller {
 
         this.view.bindComputerOpponentClicked(this.handleComputerOpponentClicked);
         this.view.bindHumanOpponentClicked(this.handleHumanOpponentClicked);
+        this.view.bindWhiteColorClicked(this.handleWhiteColorClicked);
+        this.view.bindBlackColorClicked(this.handleBlackColorClicked);
+        this.view.bindPlayClicked(this.handlePlayClicked);
     }
 
     // dla wyboru człowieka-przeciwnika kolor jest ustawiony na undefined
@@ -157,7 +177,21 @@ class Controller {
     // wybór koloru zostaje wyświetlony
     handleComputerOpponentClicked = () => {
         this.model.opponent = 'computer';
+        this.model.color = 'white';
         this.view.showColorChoice();
+    }
+
+    handleWhiteColorClicked = () => {
+        this.model.color = 'white';
+    }
+
+    handleBlackColorClicked = () => {
+        this.model.color = 'black';
+    }
+
+    handlePlayClicked = () => {
+        //wyświetla aktualny model
+        console.log(this.model);
     }
 }
 
