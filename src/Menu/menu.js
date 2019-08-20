@@ -40,22 +40,8 @@ class View {
         this.opponentText.textContent = 'Opponent';
 
         this.opponentGroup = this.createElement('radiogroup', 'opponentGroup');
-
-        this.computerOpponent = this.createElement('input', 'computerOpponent');
-        this.computerOpponent.type = 'radio';
-        this.computerOpponent.name = 'opponent';
-        this.computerOpponent.checked = 'true';
-        this.computerOpponentLabel = this.createElement('label');
-        this.computerOpponentLabel.textContent = 'Computer';
-        this.computerOpponentLabel.setAttribute('for', 'computerOpponent');
-
-        this.humanOpponent = this.createElement('input', 'humanOpponent');
-        this.humanOpponent.type = 'radio';
-        this.humanOpponent.name = 'opponent';
-        this.humanOpponentLabel = this.createElement('label');
-        this.humanOpponentLabel.textContent = 'Human';
-        this.humanOpponentLabel.setAttribute('for', 'humanOpponent');
-
+        [this.computerOpponent, this.computerOpponentLabel] = this.createRadioButtonWithLabel('opponent', true, 'Computer', 'computerOpponent');
+        [this.humanOpponent, this.humanOpponentLabel] = this.createRadioButtonWithLabel('opponent', false, 'Human', 'humanOpponent');
         this.opponentGroup.append(this.computerOpponent, this.computerOpponentLabel, this.humanOpponent, this.humanOpponentLabel);
 
         // Wybór koloru
@@ -63,22 +49,8 @@ class View {
         this.colorText.textContent = 'Your color';
 
         this.colorGroup = this.createElement('radiogroup', 'colorGroup');
-
-        this.whiteColor = this.createElement('input', 'whiteColor');
-        this.whiteColor.type = 'radio';
-        this.whiteColor.name = 'color';
-        this.whiteColor.checked = 'true';
-        this.whiteColorLabel = this.createElement('label');
-        this.whiteColorLabel.textContent = 'White';
-        this.whiteColorLabel.setAttribute('for', 'whiteColor');
-
-        this.blackColor = this.createElement('input', 'blackColor');
-        this.blackColor.type = 'radio';
-        this.blackColor.name = 'color';
-        this.blackColorLabel = this.createElement('label');
-        this.blackColorLabel.textContent = 'Black';
-        this.blackColorLabel.setAttribute('for', 'blackColor');
-
+        [this.whiteColor, this.whiteColorLabel] = this.createRadioButtonWithLabel('color', true, 'White', 'whiteColor');
+        [this.blackColor, this.blackColorLabel] = this.createRadioButtonWithLabel('color', false, 'Black', 'blackColor');
         this.colorGroup.append(this.whiteColor, this.whiteColorLabel, this.blackColor, this.blackColorLabel);
 
         // Przycisk rozpoczęcia gry
@@ -99,6 +71,18 @@ class View {
         if (className) element.classList.add(className);
 
         return element;
+    }
+
+    //metoda tworząca radio button z etykietą
+    createRadioButtonWithLabel(name, checked, label, idName, className) {
+        const radioButton = this.createElement('input', idName, className);
+        radioButton.type = 'radio';
+        radioButton.name = name;
+        radioButton.checked = checked;
+        const radioButtonLabel = this.createElement('label');
+        radioButtonLabel.textContent = label;
+        radioButtonLabel.setAttribute('for', idName);
+        return [radioButton, radioButtonLabel];
     }
 
     // metoda zwracająca element
