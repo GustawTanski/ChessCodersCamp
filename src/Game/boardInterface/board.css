@@ -1,10 +1,13 @@
 :root{
-    --white-field-color: #fda;
-    --black-field-color: #320;
+    --white-field-color: #b95;
+    --black-field-color: #640;
     --field-hover-border: rgba(200,100,0,0.5);
     --field-highlighted-overlay: rgba(50,200,0,0.2);
+    --message-background-color: rgba(50,10,0,0.8);
+    --message-text-color: #fda;
 }
 
+/*CHESSBOARD STYLES*/
 #chessboard{
     display: grid;
     position: relative;
@@ -116,6 +119,7 @@
     grid-row-start: 1;
 }
 
+/*CHESS PIECE STYLES*/
 .piece{
     box-sizing: border-box;
     -moz-box-sizing: border-box;
@@ -183,4 +187,64 @@
         transform: translateY(0);
         opacity: 1;
     }
+}
+
+/*GAME OVER SCREEN STYLES*/
+.end-screen{
+    position: absolute;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    width: 100%;
+    height: 100%;
+    z-index: 10;
+}
+
+.end-screen::before{
+    box-sizing: border-box;
+    -moz-box-sizing: border-box;
+    -webkit-box-sizing: border-box;
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    content: "";
+    background: rgba(0,0,0,0.5);
+    z-index: -1;
+    animation-name: "fade-in";
+    animation-duration: 0.5s;
+}
+
+.end-screen .content-container{
+    position: relative;
+    box-sizing: border-box;
+    -moz-box-sizing: border-box;
+    -webkit-box-sizing: border-box;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    padding: 8%;
+    width: 100%;
+    background: linear-gradient(rgba(0,0,0,0) 0%, var(--message-background-color) 20%, var(--message-background-color) 80%, rgba(0,0,0,0) 100%);
+    animation-name: "fade-in";
+    animation-duration: 1.8s;
+}
+
+.end-screen .content-container .game-message{
+    display: block;
+    margin: 0 0 0.5em;
+    padding: 0;
+    color: var(--message-text-color);
+}
+
+.end-screen.closed{
+    pointer-events: none;
+    opacity: 0;
+    transition: opacity 0.3s ease;
+}
+
+@keyframes fade-in{
+    from {opacity: 0;}
+    to {opacity: 1;}
 }
