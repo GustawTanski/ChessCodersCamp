@@ -1,7 +1,7 @@
 /**
  * Supporting class for the InterfaceBoard - this class and its methods should never be accessed from outside InterfaceBoard or itself.
  */
-class InterfacePiece{
+export default class InterfacePiece{
     constructor(piece, color){
         this._piece = piece;
         this._color = color;

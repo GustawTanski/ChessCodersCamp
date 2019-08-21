@@ -1,9 +1,10 @@
+import InterfaceBoard from "./InterfaceBoard"
 import InterfacePiece from "./InterfacePiece"
 
 /**
  * Supporting class for the InterfaceBoard - this class and its methods should never be accessed from outside InterfaceBoard or itself.
  */
-class InterfaceField {
+export default class InterfaceField {
     /**
      * Constructor creating a single field of the board, with specified coordinates
      * @param {Object} coords  - coordinates in the {x:0,y:0} object format

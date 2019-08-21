@@ -1,6 +1,7 @@
 import "./board.css";
 import BoardState from "../gameLogic/history/BoardState"
 import InterfaceField from "./InterfaceField"
+import InterfacePiece from "./InterfacePiece"
 
 export default class InterfaceBoard{
     /**
