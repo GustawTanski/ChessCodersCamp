@@ -1,5 +1,4 @@
 import Piece from "./Piece";
-// TODO:: bicie w przelocie (jak wymyślę jak to zrobić), promocja, inne ruchy zależne od ustawienia pionka
 
 class Pawn extends Piece {
     constructor(position, color, pawnNumber) {
@@ -45,8 +44,6 @@ class Pawn extends Piece {
         const enemyPawn = this._findEnemyPawn(boardState, toCoords);
         if (!enemyPawn) return false;
 
-        // debugger;
-
         if (enemyPawn.name === "Pawn" && (this.position.y === 3 || this.position.y === 4)) {
             const previousPositionOfEnemyPawn = this._findPreviousPositionOfEnemyPawn(previousBoardState, enemyPawn);
             if (enemyPawn.color !== this.color && (previousPositionOfEnemyPawn.y === 1 || previousPositionOfEnemyPawn.y === 6)) {
@@ -59,7 +56,6 @@ class Pawn extends Piece {
 
     _findEnemyPawn(boardState, coords) {
         return boardState.boardState
-            // .filter(elem => elem !== undefined)
             .find(piece => 
                 piece.position.x === coords.x && 
                 piece.position.y === this._position.y
@@ -70,7 +66,6 @@ class Pawn extends Piece {
         if (!previousBoardState) return undefined;
         
         return previousBoardState.boardState
-            // .filter(elem => elem !== undefined)
             .find(piece => 
                 piece.pawnNumber === enemyPawn.pawnNumber && 
                 piece.color === enemyPawn.color
