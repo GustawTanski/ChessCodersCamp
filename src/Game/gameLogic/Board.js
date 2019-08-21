@@ -12,10 +12,12 @@ class Board {
     constructor() {
         this.pieces = new Array();
         this.createPieces();
+
         this.boardHistory = new BoardHistory();
         this.updateBoardHistory();
         this.check = false;
         this.mate = false;
+
     }
 
 
@@ -25,6 +27,7 @@ class Board {
 
 
     legalMoves(coords) {
+
         const chosenPiece = this.findPiece(coords);
         if (chosenPiece instanceof Pawn) {
             const previousBoardState = this.boardHistory[this.boardHistory.length - 2];
@@ -71,9 +74,11 @@ class Board {
         }
         this.findPiece(fromCoords).move(toCoords);
         this.updateBoardHistory();
-        this.isCheck();
-        this.isMate();
-       
+        this.isCheck("white");//kolor króla który ma być sprawdzony
+        this.isCheck("black");
+        this.isMate("white");
+        this.isMate("black");
+
         return this.boardHistory.last();
     }
 
@@ -89,34 +94,40 @@ class Board {
     }
 
     /* DO UZUPELNIENIA */
-    isCheck() {
-        // const king = this.findKing('white');
-        // const enemiesLegalMoves = this.getAllEnemiesLegalMoves('black');
-        // return enemiesLegalMoves.some(cord => cord === king.position);
-        // console.log(this.getAllEnemiesLegalMoves("black"))
-        // console.log(this.pieces[0])
-        const colors = ["white", "black"]
-        const kingsPosition = colors.map(color => this._findPiecePosition("King", color))
-        const enemiesPossibleMoves = colors.map(color => this._getAllEnemiesLegalMoves(color))
-        // const whiteKingPosition = this._findPiecePosition("King","white")
-        // const blackEnemiesPossibleMoves = this._getAllEnemiesLegalMoves("black")
-        // const blackKingPosition = this._findPiecePosition("King","black")
-        // const whiteEnemiesPossibleMoves = this._getAllEnemiesLegalMoves("white")
-        const queenPosition = this._findPiecePosition("Queen","black")
-        
-        // console.log(whiteKingPosition)
-        // console.log(queenPosition)
-        // // console.log(this.legalMoves(queenPosition))
-        // console.log(blackEnemiesPossibleMoves)
-        // console.log(enemiesPossibleMoves.includes(kingPosition))
-        console.log(enemiesPossibleMoves[1].some(move => move.x === kingsPosition[0].x && move.y === kingsPosition[0].y)
-        || enemiesPossibleMoves[0].some(move => move.x === kingsPosition[1].x && move.y === kingsPosition[1].y))
-       return enemiesPossibleMoves[1].some(move => move.x === kingsPosition[0].x && move.y === kingsPosition[0].y)
-       || enemiesPossibleMoves[0].some(move => move.x === kingsPosition[1].x && move.y === kingsPosition[1].y)
-        // return enemiesPossibleMoves.includes(kingPosition)
+    isCheck(color) {
+        const kingPosition = this._findPiecePosition("King", color)
+        return this._canPieceBeCaptured(color, kingPosition)
     }
 
-    isMate() {}
+    _canPieceBeCaptured(color,piecePosition){
+        const enemiesPossibleMoves = this._getAllEnemiesLegalMoves(color)
+        return enemiesPossibleMoves.some(move => move.x === piecePosition.x && move.y === piecePosition.y)
+    }
+
+    isMate(color) {
+        const kingPosition = this._findPiecePosition("King", color)
+        const kingLegalMoves = this.legalMoves(this._findPiecePosition("King", color))
+        const enemiesPossibleMoves = this._getAllEnemiesLegalMoves(color)
+        const canKingEscape = kingLegalMoves
+            .some(move => {
+                for (let enemMove of enemiesPossibleMoves) {
+                    if (move.x === enemMove.x && move.y === enemMove.y)
+                        return false
+                }
+                return true;
+            })
+        const possibleAssassinsPositions = this._getPossibleAssasinsPositions(color, kingPosition)
+        let canWeCounterstrike = true;
+        if(possibleAssassinsPositions.length > 0){
+        const assassinColor = color === 'black' ? 'white' :  'black'
+        const canAssasinBeCaptured = this._canPieceBeCaptured(assassinColor, possibleAssassinsPositions[0])
+        canWeCounterstrike = (possibleAssassinsPositions.length > 1 ? false : true) && canAssasinBeCaptured
+        }
+       
+
+        return this.isCheck(color) && !canKingEscape &&   !canWeCounterstrike  
+
+    }
 
     _findPiecePosition(pieceType, color) {
         return this.pieces
@@ -126,14 +137,25 @@ class Board {
 
     _getAllEnemiesLegalMoves(color) {
         return this.pieces
-            .filter(piece => piece.color === color)
+            .filter(piece => piece.color !== color)
             .map(piece => piece.position)
             .flatMap(cords => this.legalMoves(cords))
-            .filter(cord => cord!==undefined) //nie powinno być undefined, ale na wszelki wypadek to sprawdzam
-            
-        
-            
+            .filter(cord => cord !== undefined) //nie powinno być undefined, ale na wszelki wypadek to sprawdzam
     }
+    _getPossibleAssasinsPositions(color,piecePosition) {
+        return this.pieces
+            .filter(piece => piece.color !== color)
+            .filter(piece => this.legalMoves(piece.position) !== undefined)
+            .filter(piece => {
+                for (let move of this.legalMoves(piece.position)) {
+                    if (move.x === piecePosition.x && move.y === piecePosition.y)
+                        return true;
+                }
+                return false;
+            })
+            .map(piece => piece.position)
+    }
+
 
 
     updateBoardHistory() {
