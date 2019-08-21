@@ -14,6 +14,7 @@ class Board {
         this.createPieces();
         this.capturedPieces = new Array();
         this.boardHistory = new BoardHistory();
+        this.updateBoardHistory();
         this.check = false;
         this.mate = false;
         this._color = "white";
