@@ -25,7 +25,7 @@ class Pawn extends Piece {
     }
 
     legalMoves(boardState, previousBoardState) {
-        const possiblePositions = this._possiblePositions(boardState);
+        const possiblePositions = this._possiblePositions(boardState, previousBoardState);
         const onBoardPositions = possiblePositions.filter(pos => !this._isOutOfTheBoard(pos));
 
         try {
@@ -43,28 +43,45 @@ class Pawn extends Piece {
 
     isThisEnPassant(toCoords, boardState, previousBoardState) {
         const enemyPawn = this._findEnemyPawn(boardState, toCoords);
-        if (enemyPawn instanceof Pawn && (this.position.y === 3 || this.position.y === 4)) {
+        if (!enemyPawn) return false;
+
+        // debugger;
+
+        if (enemyPawn.name === "Pawn" && (this.position.y === 3 || this.position.y === 4)) {
             const previousPositionOfEnemyPawn = this._findPreviousPositionOfEnemyPawn(previousBoardState, enemyPawn);
             if (enemyPawn.color !== this.color && (previousPositionOfEnemyPawn.y === 1 || previousPositionOfEnemyPawn.y === 6)) {
                 return true;
             }
         }
+
         return false;
     }
 
     _findEnemyPawn(boardState, coords) {
-        return boardState.toTwoDimensionArray().find(piece => piece.position.x === coords.x && piece.position.y === this.position.y);
+        return boardState.boardState
+            // .filter(elem => elem !== undefined)
+            .find(piece => 
+                piece.position.x === coords.x && 
+                piece.position.y === this._position.y
+            );
     }
 
     _findPreviousPositionOfEnemyPawn(previousBoardState, enemyPawn) {
-        return previousBoardState.toTwoDimensionArray().find(piece => piece.pawnNumber === enemyPawn.pawnNumber && piece.color === enemyPawn.color).position;
+        if (!previousBoardState) return undefined;
+        
+        return previousBoardState.boardState
+            // .filter(elem => elem !== undefined)
+            .find(piece => 
+                piece.pawnNumber === enemyPawn.pawnNumber && 
+                piece.color === enemyPawn.color
+            ).position;
     }
 
     getCoordsOfCapturedPawn(toCoords, boardState, previousBoardState) {
         if (this.isThisEnPassant(toCoords, boardState, previousBoardState)) {
             return {
                 x: toCoords.x,
-                y: this.position.y
+                y: this._position.y
             };
         }
         return null;
@@ -74,11 +91,12 @@ class Pawn extends Piece {
     /*
         Zwraca wszystkie możliwe ruchy pionka
     */
-    _possiblePositions(boardState) {
+    _possiblePositions(boardState, previousBoardState) {
         const possiblePositions = [];
 
         this._forwardMoves(possiblePositions, boardState);
         this._possibleCaptureMoves(possiblePositions, boardState);
+        this._possibleEnPassant(possiblePositions, boardState, previousBoardState);
 
         return possiblePositions;
     }
@@ -130,6 +148,34 @@ class Pawn extends Piece {
                 possiblePositions.push(piece.position);
             }
         }
+    }
+
+    _possibleEnPassant(possiblePositions, boardState, previousBoardState) {
+        const enPassantMoves = [];
+        const sign = this._colorSign();
+
+        if (this._position.y === 3 || this._position.y === 4) {
+            if (this._position.x > 0) {
+                enPassantMoves.push({
+                    x: this._position.x - 1,
+                    y: this._position.y + (1 * sign)
+                });
+            }
+    
+            if (this._position.x < 7) {
+                enPassantMoves.push({
+                    x: this._position.x + 1,
+                    y: this._position.y + (1 * sign)
+                });
+            }
+        }
+
+        console.log(enPassantMoves);
+
+        possiblePositions.push.apply(possiblePositions, enPassantMoves
+            .filter(elem => elem !== undefined)
+            .filter(coords => this.isThisEnPassant(coords, boardState, previousBoardState))
+        );
     }
 
     /*
