@@ -43,10 +43,10 @@ class Bishop extends Piece {
 
     _allPossiblePositions() {
         const arrDiagonal = [];
-        arrDiagonal.push(this._addUpRight);
-        arrDiagonal.push(this._addUpLeft);
-        arrDiagonal.push(this._addDownRight);
-        arrDiagonal.push(this._addDownLeft);
+        arrDiagonal.push(...this._addUpRight());
+        arrDiagonal.push(...this._addUpLeft());
+        arrDiagonal.push(...this._addDownRight());
+        arrDiagonal.push(...this._addDownLeft());
         return arrDiagonal;
     }
 
