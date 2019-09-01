@@ -1,26 +1,36 @@
 import Piece from "./Piece";
-// TODO:: bicie w przelocie (jak wymyślę jak to zrobić), promocja, inne ruchy zależne od ustawienia pionka
 
 class Pawn extends Piece {
-    constructor(position, color) {
+    constructor(position, color, pawnNumber) {
         super(position, color);
         this._wasMoved = false;
+        this._pawnNumber = pawnNumber;
+    }
+
+    get pawnNumber() {
+        return this._pawnNumber;
     }
 
     move(toCoords) {
-        const {x, y} = toCoords;
-        this._position = {x, y};
+        const {
+            x,
+            y
+        } = toCoords;
+        this._position = {
+            x,
+            y
+        };
         this._wasMoved = true;
     }
 
     legalMoves(boardState, previousBoardState) {
-        const possiblePositions = this._possiblePositions(boardState);
+        const possiblePositions = this._possiblePositions(boardState, previousBoardState);
         const onBoardPositions = possiblePositions.filter(pos => !this._isOutOfTheBoard(pos));
 
         try {
             const boardState2D = boardState.toTwoDimensionArray();
             const legalPositions = onBoardPositions.filter(pos =>
-                boardState2D[pos.x][pos.y] == undefined || 
+                boardState2D[pos.x][pos.y] == undefined ||
                 boardState2D[pos.x][pos.y].color != this._color);
 
             return legalPositions;
@@ -29,20 +39,61 @@ class Pawn extends Piece {
         }
     }
 
-    isThisEnPassant() {
+
+    isThisEnPassant(toCoords, boardState, previousBoardState) {
+        const enemyPawn = this._findEnemyPawn(boardState, toCoords);
+        if (!enemyPawn) return false;
+
+        if (enemyPawn.name === "Pawn" && (this.position.y === 3 || this.position.y === 4)) {
+            const previousPositionOfEnemyPawn = this._findPreviousPositionOfEnemyPawn(previousBoardState, enemyPawn);
+            if (enemyPawn.color !== this.color && (previousPositionOfEnemyPawn.y === 1 || previousPositionOfEnemyPawn.y === 6)) {
+                return true;
+            }
+        }
+
         return false;
     }
+
+    _findEnemyPawn(boardState, coords) {
+        return boardState.boardState
+            .find(piece => 
+                piece.position.x === coords.x && 
+                piece.position.y === this._position.y
+            );
+    }
+
+    _findPreviousPositionOfEnemyPawn(previousBoardState, enemyPawn) {
+        if (!previousBoardState) return undefined;
+        
+        return previousBoardState.boardState
+            .find(piece => 
+                piece.pawnNumber === enemyPawn.pawnNumber && 
+                piece.color === enemyPawn.color
+            ).position;
+    }
+
+    getCoordsOfCapturedPawn(toCoords, boardState, previousBoardState) {
+        if (this.isThisEnPassant(toCoords, boardState, previousBoardState)) {
+            return {
+                x: toCoords.x,
+                y: this._position.y
+            };
+        }
+        return null;
+    }
+
 
     /*
         Zwraca wszystkie możliwe ruchy pionka
     */
-    _possiblePositions(boardState) {
+    _possiblePositions(boardState, previousBoardState) {
         const possiblePositions = [];
 
         this._forwardMoves(possiblePositions, boardState);
         this._possibleCaptureMoves(possiblePositions, boardState);
+        this._possibleEnPassant(possiblePositions, boardState, previousBoardState);
 
-        return possiblePositions.filter(pos => pos !== undefined);
+        return possiblePositions;
     }
 
     /*
@@ -57,12 +108,16 @@ class Pawn extends Piece {
                 x: this._position.x,
                 y: this._position.y + (1 * sign)
             });
-    
+
             if (!this._wasMoved) {
-                possiblePositions.push({
-                    x: this._position.x,
-                    y: this._position.y + (2 * sign)
-                });
+                const array2d = boardState.toTwoDimensionArray();
+
+                if (array2d[this._position.x][this._position.y + 2] === undefined) {
+                    possiblePositions.push({
+                        x: this._position.x,
+                        y: this._position.y + (2 * sign)
+                    });
+                }
             }
         }
     }
@@ -84,10 +139,38 @@ class Pawn extends Piece {
         }
 
         for (let piece of pieces) {
-            if (piece != undefined && piece._color != this._color) {
-                possiblePositions.push(piece._position);
+            if (piece != undefined && piece.color != this._color) {
+                possiblePositions.push(piece.position);
             }
         }
+    }
+
+    _possibleEnPassant(possiblePositions, boardState, previousBoardState) {
+        const enPassantMoves = [];
+        const sign = this._colorSign();
+
+        if (this._position.y === 3 || this._position.y === 4) {
+            if (this._position.x > 0) {
+                enPassantMoves.push({
+                    x: this._position.x - 1,
+                    y: this._position.y + (1 * sign)
+                });
+            }
+    
+            if (this._position.x < 7) {
+                enPassantMoves.push({
+                    x: this._position.x + 1,
+                    y: this._position.y + (1 * sign)
+                });
+            }
+        }
+
+        console.log(enPassantMoves);
+
+        possiblePositions.push.apply(possiblePositions, enPassantMoves
+            .filter(elem => elem !== undefined)
+            .filter(coords => this.isThisEnPassant(coords, boardState, previousBoardState))
+        );
     }
 
     /*
